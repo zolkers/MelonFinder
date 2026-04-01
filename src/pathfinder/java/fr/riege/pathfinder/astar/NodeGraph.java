@@ -38,7 +38,7 @@ public final class NodeGraph {
     private void addHorizontalNeighbors(@NotNull BlockPos pos, double parentGCost,
             @NotNull List<Node> neighbors) {
         Optional<IMovementEvaluator> walkOpt = evaluatorRegistry.get(MovementKeys.WALK);
-        if (!walkOpt.isPresent()) {
+        if (walkOpt.isEmpty()) {
             return;
         }
         IMovementEvaluator walkEval = walkOpt.get();
@@ -61,7 +61,7 @@ public final class NodeGraph {
     private void addJumpNeighbor(@NotNull BlockPos pos, double parentGCost,
             @NotNull List<Node> neighbors) {
         Optional<IMovementEvaluator> jumpOpt = evaluatorRegistry.get(MovementKeys.JUMP);
-        if (!jumpOpt.isPresent()) {
+        if (jumpOpt.isEmpty()) {
             return;
         }
         IMovementEvaluator jumpEval = jumpOpt.get();
@@ -76,7 +76,7 @@ public final class NodeGraph {
     private void addFallNeighbor(@NotNull BlockPos pos, double parentGCost,
             @NotNull List<Node> neighbors) {
         Optional<IMovementEvaluator> fallOpt = evaluatorRegistry.get(MovementKeys.FALL);
-        if (!fallOpt.isPresent()) {
+        if (fallOpt.isEmpty()) {
             return;
         }
         IMovementEvaluator fallEval = fallOpt.get();
