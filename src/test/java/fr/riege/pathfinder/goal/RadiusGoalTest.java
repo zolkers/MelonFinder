@@ -44,14 +44,14 @@ class RadiusGoalTest {
         BlockPos center = new BlockPos(7, 64, 3);
         RadiusGoal goal = new RadiusGoal(center, 1.0);
 
-        assertEquals(center, goal.getCenter());
+        assertEquals(center, goal.center());
     }
 
     @Test
     void getRadius_returnsRadius() {
         RadiusGoal goal = new RadiusGoal(new BlockPos(0, 0, 0), 6.5);
 
-        assertEquals(6.5, goal.getRadius(), 1e-9);
+        assertEquals(6.5, goal.radius(), 1e-9);
     }
 
     @Test

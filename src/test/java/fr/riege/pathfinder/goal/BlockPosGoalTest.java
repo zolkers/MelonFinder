@@ -37,7 +37,7 @@ class BlockPosGoalTest {
         BlockPos target = new BlockPos(1, 2, 3);
         BlockPosGoal goal = new BlockPosGoal(target);
 
-        assertEquals(target, goal.getTarget());
+        assertEquals(target, goal.target());
     }
 
     @Test
