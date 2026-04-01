@@ -44,7 +44,7 @@ public final class FabricBlockPhysicsLayer implements IBlockPhysicsLayer {
         net.minecraft.core.BlockPos mcPos = toMc(pos);
         BlockState state = level.getBlockState(mcPos);
         double maxY = state.getCollisionShape(level, mcPos).max(Direction.Axis.Y);
-        return Double.isInfinite(maxY) ? pos.getY() : pos.getY() + maxY;
+        return Double.isInfinite(maxY) ? pos.y() : pos.y() + maxY;
     }
 
     @Override
@@ -62,6 +62,6 @@ public final class FabricBlockPhysicsLayer implements IBlockPhysicsLayer {
     }
 
     private @NotNull net.minecraft.core.BlockPos toMc(@NotNull BlockPos pos) {
-        return new net.minecraft.core.BlockPos(pos.getX(), pos.getY(), pos.getZ());
+        return new net.minecraft.core.BlockPos(pos.x(), pos.y(), pos.z());
     }
 }

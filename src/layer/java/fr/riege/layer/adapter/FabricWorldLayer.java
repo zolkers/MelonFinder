@@ -45,6 +45,6 @@ public final class FabricWorldLayer implements IWorldLayer {
     }
 
     private @NotNull net.minecraft.core.BlockPos toMc(@NotNull BlockPos pos) {
-        return new net.minecraft.core.BlockPos(pos.getX(), pos.getY(), pos.getZ());
+        return new net.minecraft.core.BlockPos(pos.x(), pos.y(), pos.z());
     }
 }

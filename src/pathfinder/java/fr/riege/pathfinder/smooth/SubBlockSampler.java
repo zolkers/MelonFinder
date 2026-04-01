@@ -25,12 +25,12 @@ public final class SubBlockSampler {
     }
 
     public @NotNull Vec3 sample(@NotNull BlockPos pos, @NotNull BlockPos nextPos) {
-        double cx = pos.getX() + 0.5;
-        double cy = pos.getY();
-        double cz = pos.getZ() + 0.5;
+        double cx = pos.x() + 0.5;
+        double cy = pos.y();
+        double cz = pos.z() + 0.5;
 
-        double biasX = (nextPos.getX() - pos.getX()) * DIRECTION_BIAS;
-        double biasZ = (nextPos.getZ() - pos.getZ()) * DIRECTION_BIAS;
+        double biasX = (nextPos.x() - pos.x()) * DIRECTION_BIAS;
+        double biasZ = (nextPos.z() - pos.z()) * DIRECTION_BIAS;
 
         double noiseX = (random.nextDouble() * 2.0 - 1.0) * MAX_VARIANCE;
         double noiseZ = (random.nextDouble() * 2.0 - 1.0) * MAX_VARIANCE;

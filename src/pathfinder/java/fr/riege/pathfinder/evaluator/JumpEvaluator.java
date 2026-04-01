@@ -30,7 +30,7 @@ public final class JumpEvaluator implements IMovementEvaluator {
 
     @Override
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
-        int heightDiff = to.getY() - from.getY();
+        int heightDiff = to.y() - from.y();
         if (heightDiff != MAX_JUMP_HEIGHT) return MovementResult.impossible();
         if (!worldLayer.isWalkable(to)) return MovementResult.impossible();
         if (!headClearance(from)) return MovementResult.impossible();
@@ -39,7 +39,7 @@ public final class JumpEvaluator implements IMovementEvaluator {
     }
 
     private boolean headClearance(@NotNull BlockPos from) {
-        BlockPos head = new BlockPos(from.getX(), from.getY() + 2, from.getZ());
+        BlockPos head = new BlockPos(from.x(), from.y() + 2, from.z());
         return !worldLayer.isSolid(head);
     }
 }

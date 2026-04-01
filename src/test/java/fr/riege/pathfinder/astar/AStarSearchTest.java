@@ -35,9 +35,9 @@ class AStarSearchTest {
             public boolean isWalkable(@NonNull BlockPos pos) {
                 if (walls.contains(pos)) return false;
                 // Bounded 20x20 grid at floor Y
-                return pos.getY() == FLOOR_Y
-                    && pos.getX() >= -2 && pos.getX() <= 15
-                    && pos.getZ() >= -2 && pos.getZ() <= 15;
+                return pos.y() == FLOOR_Y
+                    && pos.x() >= -2 && pos.x() <= 15
+                    && pos.z() >= -2 && pos.z() <= 15;
             }
 
             @Override
@@ -62,7 +62,7 @@ class AStarSearchTest {
             @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
             @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
-            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.y(); }
             @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };

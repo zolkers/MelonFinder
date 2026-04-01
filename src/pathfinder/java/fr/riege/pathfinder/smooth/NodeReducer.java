@@ -28,12 +28,12 @@ public final class NodeReducer {
         BlockPos curr = path.get(i);
         BlockPos next = path.get(i + 1);
 
-        int dxIn = curr.getX() - prev.getX();
-        int dzIn = curr.getZ() - prev.getZ();
-        int dxOut = next.getX() - curr.getX();
-        int dzOut = next.getZ() - curr.getZ();
-        int dyIn = curr.getY() - prev.getY();
-        int dyOut = next.getY() - curr.getY();
+        int dxIn = curr.x() - prev.x();
+        int dzIn = curr.z() - prev.z();
+        int dxOut = next.x() - curr.x();
+        int dzOut = next.z() - curr.z();
+        int dyIn = curr.y() - prev.y();
+        int dyOut = next.y() - curr.y();
 
         boolean horizontalChange = (dxIn != dxOut) || (dzIn != dzOut);
         boolean verticalChange = (dyIn != dyOut);

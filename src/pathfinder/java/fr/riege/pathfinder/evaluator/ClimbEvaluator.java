@@ -16,9 +16,9 @@ public final class ClimbEvaluator implements IMovementEvaluator {
 
     @Override
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
-        int dx = to.getX() - from.getX();
-        int dy = to.getY() - from.getY();
-        int dz = to.getZ() - from.getZ();
+        int dx = to.x() - from.x();
+        int dy = to.y() - from.y();
+        int dz = to.z() - from.z();
         boolean isVertical = dx == 0 && dz == 0 && (dy == 1 || dy == -1);
         if (!isVertical) return MovementResult.impossible();
         if (blockPhysicsLayer.isPassable(to)) return MovementResult.impossible();

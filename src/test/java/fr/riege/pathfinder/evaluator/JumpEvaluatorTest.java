@@ -23,7 +23,7 @@ class JumpEvaluatorTest {
     private static final BlockPos TO_UP2 = new BlockPos(1, 66, 0);
 
     private IWorldLayer worldWith(boolean toWalkable, boolean headBlocked) {
-        BlockPos headPos = new BlockPos(FROM.getX(), FROM.getY() + 2, FROM.getZ());
+        BlockPos headPos = new BlockPos(FROM.x(), FROM.y() + 2, FROM.z());
         return new IWorldLayer() {
             @Override public boolean isWalkable(@NonNull BlockPos pos) { return toWalkable; }
             @Override public boolean isSolid(@NonNull BlockPos pos) { return pos.equals(headPos) && headBlocked; }
@@ -37,7 +37,7 @@ class JumpEvaluatorTest {
             @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
             @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
-            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.y(); }
             @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };

@@ -32,8 +32,8 @@ public final class WalkEvaluator implements IMovementEvaluator {
     }
 
     private boolean fitsAtDestination(@NotNull BlockPos pos) {
-        int headY = (int) Math.ceil(pos.getY() + entityPhysicsLayer.getHitboxHeight());
-        BlockPos head = new BlockPos(pos.getX(), headY, pos.getZ());
+        int headY = (int) Math.ceil(pos.y() + entityPhysicsLayer.getHitboxHeight());
+        BlockPos head = new BlockPos(pos.x(), headY, pos.z());
         return !worldLayer.isSolid(head);
     }
 

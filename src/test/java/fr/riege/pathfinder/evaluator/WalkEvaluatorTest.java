@@ -34,7 +34,7 @@ class WalkEvaluatorTest {
             @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
             @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
-            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.y(); }
             @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
@@ -81,7 +81,7 @@ class WalkEvaluatorTest {
             @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 0.4f; }
             @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
             @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
-            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.y(); }
             @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };

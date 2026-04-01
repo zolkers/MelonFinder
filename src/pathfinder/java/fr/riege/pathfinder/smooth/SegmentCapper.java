@@ -39,9 +39,9 @@ public final class SegmentCapper {
     }
 
     private @NotNull BlockPos midpoint(@NotNull BlockPos from, @NotNull BlockPos to) {
-        int mx = Math.round((from.getX() + to.getX()) / 2.0f);
-        int my = Math.round((from.getY() + to.getY()) / 2.0f);
-        int mz = Math.round((from.getZ() + to.getZ()) / 2.0f);
+        int mx = Math.round((from.x() + to.x()) / 2.0f);
+        int my = Math.round((from.y() + to.y()) / 2.0f);
+        int mz = Math.round((from.z() + to.z()) / 2.0f);
         return new BlockPos(mx, my, mz);
     }
 }

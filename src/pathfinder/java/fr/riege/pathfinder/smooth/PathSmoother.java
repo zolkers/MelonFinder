@@ -43,12 +43,12 @@ public final class PathSmoother {
     }
 
     private boolean hasLos(@NotNull BlockPos from, @NotNull BlockPos to) {
-        double fromX = from.getX() + 0.5;
-        double fromY = from.getY();
-        double fromZ = from.getZ() + 0.5;
-        double toX = to.getX() + 0.5;
-        double toY = to.getY();
-        double toZ = to.getZ() + 0.5;
+        double fromX = from.x() + 0.5;
+        double fromY = from.y();
+        double fromZ = from.z() + 0.5;
+        double toX = to.x() + 0.5;
+        double toY = to.y();
+        double toZ = to.z() + 0.5;
 
         for (int step = 0; step <= LOS_STEPS; step++) {
             double t = (double) step / LOS_STEPS;

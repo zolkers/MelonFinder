@@ -18,9 +18,9 @@ public final class ParkourEvaluator implements IMovementEvaluator {
 
     @Override
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
-        int dx = Math.abs(to.getX() - from.getX());
-        int dy = to.getY() - from.getY();
-        int dz = Math.abs(to.getZ() - from.getZ());
+        int dx = Math.abs(to.x() - from.x());
+        int dy = to.y() - from.y();
+        int dz = Math.abs(to.z() - from.z());
         boolean isHorizontalGap = dy == 0 && ((dx == REQUIRED_GAP && dz == 0) || (dz == REQUIRED_GAP && dx == 0));
         if (!isHorizontalGap) return MovementResult.impossible();
         BlockPos intermediate = midpoint(from, to);
@@ -30,8 +30,8 @@ public final class ParkourEvaluator implements IMovementEvaluator {
     }
 
     private @NotNull BlockPos midpoint(@NotNull BlockPos from, @NotNull BlockPos to) {
-        int midX = (from.getX() + to.getX()) / 2;
-        int midZ = (from.getZ() + to.getZ()) / 2;
-        return new BlockPos(midX, from.getY(), midZ);
+        int midX = (from.x() + to.x()) / 2;
+        int midZ = (from.z() + to.z()) / 2;
+        return new BlockPos(midX, from.y(), midZ);
     }
 }

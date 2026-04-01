@@ -22,9 +22,9 @@ public final class FallEvaluator implements IMovementEvaluator {
 
     @Override
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
-        if (to.getY() >= from.getY()) return MovementResult.impossible();
+        if (to.y() >= from.y()) return MovementResult.impossible();
         if (!worldLayer.isWalkable(to)) return MovementResult.impossible();
-        int drop = from.getY() - to.getY();
+        int drop = from.y() - to.y();
         float damage = entityPhysicsLayer.evaluateFallDamage(drop);
         if (damage >= MAX_SURVIVABLE_DAMAGE) return MovementResult.impossible();
         return MovementResult.possible(BASE_COST + damage * 2.0);

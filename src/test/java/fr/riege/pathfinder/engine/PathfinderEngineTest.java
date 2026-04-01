@@ -32,9 +32,9 @@ class PathfinderEngineTest {
         return new IWorldLayer() {
             @Override
             public boolean isWalkable(@NonNull BlockPos pos) {
-                return pos.getY() == FLOOR_Y
-                    && pos.getX() >= 0 && pos.getX() <= 19
-                    && pos.getZ() >= 0 && pos.getZ() <= 19;
+                return pos.y() == FLOOR_Y
+                    && pos.x() >= 0 && pos.x() <= 19
+                    && pos.z() >= 0 && pos.z() <= 19;
             }
 
             @Override
@@ -59,7 +59,7 @@ class PathfinderEngineTest {
             @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
             @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
-            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.y(); }
             @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
             @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };

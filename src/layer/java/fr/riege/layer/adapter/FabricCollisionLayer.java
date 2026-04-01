@@ -31,8 +31,8 @@ public final class FabricCollisionLayer implements ICollisionLayer {
         List<AABB> boxes = new ArrayList<>();
         shape.forAllBoxes((x1, y1, z1, x2, y2, z2) ->
             boxes.add(new AABB(
-                new Vec3(pos.getX() + x1, pos.getY() + y1, pos.getZ() + z1),
-                new Vec3(pos.getX() + x2, pos.getY() + y2, pos.getZ() + z2)
+                new Vec3(pos.x() + x1, pos.y() + y1, pos.z() + z1),
+                new Vec3(pos.x() + x2, pos.y() + y2, pos.z() + z2)
             ))
         );
         return boxes;
@@ -56,7 +56,7 @@ public final class FabricCollisionLayer implements ICollisionLayer {
     }
 
     private @NotNull net.minecraft.core.BlockPos toMc(@NotNull BlockPos pos) {
-        return new net.minecraft.core.BlockPos(pos.getX(), pos.getY(), pos.getZ());
+        return new net.minecraft.core.BlockPos(pos.x(), pos.y(), pos.z());
     }
 
     private @NotNull net.minecraft.world.phys.AABB toMcBox(@NotNull AABB box) {

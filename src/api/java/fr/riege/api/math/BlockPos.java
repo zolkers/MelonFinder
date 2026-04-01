@@ -2,34 +2,12 @@ package fr.riege.api.math;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class BlockPos {
-
-    private final int x;
-    private final int y;
-    private final int z;
-
-    public BlockPos(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getZ() {
-        return z;
-    }
+public record BlockPos(int x, int y, int z) {
 
     public double distanceTo(@NotNull BlockPos other) {
-        double dx = this.x - other.x;
-        double dy = this.y - other.y;
-        double dz = this.z - other.z;
+        double dx = (double) this.x - other.x;
+        double dy = (double) this.y - other.y;
+        double dz = (double) this.z - other.z;
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
@@ -43,23 +21,14 @@ public final class BlockPos {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof BlockPos)) {
+        if (!(obj instanceof BlockPos(int x1, int y1, int z1))) {
             return false;
         }
-        BlockPos other = (BlockPos) obj;
-        return x == other.x && y == other.y && z == other.z;
+        return x == x1 && y == y1 && z == z1;
     }
 
     @Override
-    public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
-        result = 31 * result + z;
-        return result;
-    }
-
-    @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "BlockPos{x=" + x + ", y=" + y + ", z=" + z + "}";
     }
 }
