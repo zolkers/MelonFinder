@@ -1,5 +1,6 @@
 package fr.riege.pathfinder.engine;
 
+import fr.riege.api.goal.IGoal;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.Path;
 import fr.riege.api.path.PathResult;
@@ -22,11 +23,11 @@ public final class PathfinderEngine {
     @Nullable
     private PathSession activeSession;
 
-    public @NotNull PathResult compute(@NotNull BlockPos from, @NotNull BlockPos to,
+    public @NotNull PathResult compute(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         cancel();
-        activeSession = new PathSession(from, to);
-        PathResult result = runPipeline(from, to, ctx);
+        activeSession = new PathSession(from, goal);
+        PathResult result = runPipeline(from, goal, ctx);
         activeSession = null;
         return result;
     }
@@ -42,12 +43,12 @@ public final class PathfinderEngine {
         return activeSession != null;
     }
 
-    private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull BlockPos to,
+    private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
         NodeGraph graph = new NodeGraph(ctx.getEvaluatorRegistry());
-        AStarSearch search = new AStarSearch(graph, ctx.getHeuristic(), ctx.getMaxNodes());
-        List<BlockPos> raw = search.search(from, to);
+        AStarSearch search = new AStarSearch(graph, ctx.getMaxNodes());
+        List<BlockPos> raw = search.search(from, goal);
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
             return new PathResult(empty, System.currentTimeMillis() - startMs, 0);

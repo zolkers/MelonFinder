@@ -13,9 +13,9 @@ import fr.riege.api.path.PathStatus;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
+import fr.riege.pathfinder.goal.BlockPosGoal;
 import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
 import fr.riege.pathfinder.registry.OrderedRegistry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -109,9 +109,9 @@ class PathfinderEngineTest {
         PathfinderEngine engine = new PathfinderEngine();
         PathfinderContext ctx = buildContext();
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPos to = new BlockPos(5, FLOOR_Y, 5);
+        BlockPosGoal goal = new BlockPosGoal(new BlockPos(5, FLOOR_Y, 5));
 
-        PathResult result = engine.compute(from, to, ctx);
+        PathResult result = engine.compute(from, goal, ctx);
 
         assertEquals(PathStatus.FOUND, result.getPath().getStatus());
     }
@@ -121,15 +121,15 @@ class PathfinderEngineTest {
         PathfinderEngine engine = new PathfinderEngine();
         PathfinderContext ctx = buildContext();
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPos to = new BlockPos(5, FLOOR_Y, 5);
+        BlockPosGoal goal = new BlockPosGoal(new BlockPos(5, FLOOR_Y, 5));
 
         // First compute completes normally (engine is synchronous, session clears after each call)
-        PathResult first = engine.compute(from, to, ctx);
+        PathResult first = engine.compute(from, goal, ctx);
         assertEquals(PathStatus.FOUND, first.getPath().getStatus());
         assertFalse(engine.isRunning());
 
         // Second compute starts fresh — cancel() is called at start, no exception thrown
-        PathResult second = engine.compute(from, to, ctx);
+        PathResult second = engine.compute(from, goal, ctx);
         assertEquals(PathStatus.FOUND, second.getPath().getStatus());
         assertFalse(engine.isRunning());
     }
@@ -149,9 +149,9 @@ class PathfinderEngineTest {
         PathfinderContext ctx = buildContext();
         // Y=99 is outside the walkable area — no path can reach it
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPos to = new BlockPos(0, 99, 0);
+        BlockPosGoal goal = new BlockPosGoal(new BlockPos(0, 99, 0));
 
-        PathResult result = engine.compute(from, to, ctx);
+        PathResult result = engine.compute(from, goal, ctx);
         PathStatus status = result.getPath().getStatus();
 
         assertTrue(

@@ -14,9 +14,8 @@ import fr.riege.pathfinder.evaluator.FallEvaluator;
 import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.evaluator.JumpEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
-import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
+import fr.riege.pathfinder.goal.BlockPosGoal;
 import fr.riege.pathfinder.registry.OrderedRegistry;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -104,26 +103,26 @@ class AStarSearchTest {
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));
 
         NodeGraph graph = new NodeGraph(registry);
-        return new AStarSearch(graph, new Euclidean3DHeuristic(), 10000);
+        return new AStarSearch(graph, 10000);
     }
 
     @Test
     void straightPath_found() {
         AStarSearch search = buildSearch(Collections.emptySet());
         BlockPos start = new BlockPos(0, FLOOR_Y, 0);
-        BlockPos goal = new BlockPos(4, FLOOR_Y, 0);
-        List<BlockPos> path = search.search(start, goal);
+        BlockPos goalPos = new BlockPos(4, FLOOR_Y, 0);
+        List<BlockPos> path = search.search(start, new BlockPosGoal(goalPos));
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertFalse(path.isEmpty());
-        assertEquals(goal, path.get(path.size() - 1));
+        assertEquals(goalPos, path.get(path.size() - 1));
     }
 
     @Test
     void startEqualsGoal_returnsOneNode() {
         AStarSearch search = buildSearch(Collections.emptySet());
         BlockPos start = new BlockPos(2, FLOOR_Y, 2);
-        List<BlockPos> path = search.search(start, start);
+        List<BlockPos> path = search.search(start, new BlockPosGoal(start));
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertEquals(1, path.size());
@@ -133,7 +132,7 @@ class AStarSearchTest {
     @Test
     void unreachableGoal_returnsUnreachable() {
         // Goal is surrounded by walls — no walkable neighbors exist leading to it
-        BlockPos goal = new BlockPos(5, FLOOR_Y, 5);
+        BlockPos goalPos = new BlockPos(5, FLOOR_Y, 5);
         Set<BlockPos> walls = Set.of(
             new BlockPos(4, FLOOR_Y, 5),
             new BlockPos(6, FLOOR_Y, 5),
@@ -146,7 +145,7 @@ class AStarSearchTest {
         );
         AStarSearch search = buildSearch(walls);
         BlockPos start = new BlockPos(0, FLOOR_Y, 0);
-        List<BlockPos> path = search.search(start, goal);
+        List<BlockPos> path = search.search(start, new BlockPosGoal(goalPos));
 
         assertEquals(PathStatus.UNREACHABLE, search.getLastStatus());
         assertTrue(path.isEmpty());

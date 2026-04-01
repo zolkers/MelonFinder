@@ -1,11 +1,11 @@
 package fr.riege.pathfinder.astar;
 
+import fr.riege.api.goal.IGoal;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.MovementType;
 import fr.riege.api.path.Node;
 import fr.riege.api.path.PathStatus;
 import fr.riege.api.registry.MovementKeys;
-import fr.riege.pathfinder.heuristic.IHeuristic;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,18 +17,16 @@ import java.util.Map;
 public final class AStarSearch {
 
     private final NodeGraph graph;
-    private final IHeuristic heuristic;
     private final int maxNodes;
     private PathStatus lastStatus = PathStatus.CANCELLED;
 
-    public AStarSearch(@NotNull NodeGraph graph, @NotNull IHeuristic heuristic, int maxNodes) {
+    public AStarSearch(@NotNull NodeGraph graph, int maxNodes) {
         this.graph = graph;
-        this.heuristic = heuristic;
         this.maxNodes = maxNodes;
     }
 
-    public @NotNull List<BlockPos> search(@NotNull BlockPos start, @NotNull BlockPos goal) {
-        if (start.equals(goal)) {
+    public @NotNull List<BlockPos> search(@NotNull BlockPos start, @NotNull IGoal goal) {
+        if (goal.isReached(start)) {
             lastStatus = PathStatus.FOUND;
             return Collections.singletonList(start);
         }
@@ -36,13 +34,13 @@ public final class AStarSearch {
         ClosedSet closedSet = new ClosedSet();
         Map<BlockPos, BlockPos> cameFrom = new HashMap<>();
         Map<BlockPos, Double> gCosts = new HashMap<>();
-        double startH = heuristic.estimate(start, goal);
+        double startH = goal.heuristicCost(start);
         openSet.add(new Node(start, new MovementType(MovementKeys.WALK), 0, startH));
         gCosts.put(start, 0.0);
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
             BlockPos currentPos = current.getPos();
-            if (currentPos.equals(goal)) {
+            if (goal.isReached(currentPos)) {
                 lastStatus = PathStatus.FOUND;
                 return reconstructPath(cameFrom, currentPos);
             }
@@ -60,7 +58,7 @@ public final class AStarSearch {
         return Collections.emptyList();
     }
 
-    private void processNeighbors(@NotNull Node current, @NotNull BlockPos goal,
+    private void processNeighbors(@NotNull Node current, @NotNull IGoal goal,
             @NotNull OpenSet openSet, @NotNull ClosedSet closedSet,
             @NotNull Map<BlockPos, BlockPos> cameFrom, @NotNull Map<BlockPos, Double> gCosts) {
         for (Node neighbor : graph.getNeighbors(current)) {
@@ -71,7 +69,7 @@ public final class AStarSearch {
             if (shouldSkip) continue;
             gCosts.put(neighborPos, newG);
             cameFrom.put(neighborPos, current.getPos());
-            double h = heuristic.estimate(neighborPos, goal);
+            double h = goal.heuristicCost(neighborPos);
             openSet.add(new Node(neighborPos, neighbor.getMovementType(), newG, h));
         }
     }
