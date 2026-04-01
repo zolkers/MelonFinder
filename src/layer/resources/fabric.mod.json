@@ -22,10 +22,7 @@
 			"fr.riege.client.MelonFinderClient"
 		]
 	},
-	"mixins": [
-		"melonfinder.mixins.json"
-	],
-	"depends": {
+"depends": {
 		"fabricloader": ">=0.18.5",
 		"minecraft": "~1.21.11",
 		"java": ">=21",

@@ -43,6 +43,14 @@ loom {
     }
 }
 
+// api and pathfinder are MC-free — Loom must not touch them.
+// Append their compiled output to run tasks after Loom has finished configuring them.
+afterEvaluate {
+    def extraDirs = files(sourceSets.api.output.classesDirs, sourceSets.pathfinder.output.classesDirs)
+    tasks.named('runClient').configure { classpath += extraDirs }
+    tasks.named('runServer').configure { classpath += extraDirs }
+}
+
 // client source set is created by splitEnvironmentSourceSets(); configure it after loom
 // api and pathfinder are intentionally Minecraft-free — do NOT add them to loom mods block
 sourceSets.client {
