@@ -17,7 +17,6 @@ class ParkourEvaluatorTest {
     // intermediate for FROM→TO_GAP2 is (1,64,0)
     private static final BlockPos INTERMEDIATE = new BlockPos(1, 64, 0);
 
-    /** Walkable everywhere EXCEPT the intermediate gap block — a valid parkour scenario. */
     private IWorldLayer gapWorld() {
         return new IWorldLayer() {
             @Override public boolean isWalkable(@NonNull BlockPos pos) {
@@ -29,7 +28,6 @@ class ParkourEvaluatorTest {
         };
     }
 
-    /** Walkable everywhere — no gap, so parkour should be impossible. */
     private IWorldLayer walkableWorld() {
         return new IWorldLayer() {
             @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
@@ -39,7 +37,6 @@ class ParkourEvaluatorTest {
         };
     }
 
-    /** Nothing walkable — destination not reachable. */
     private IWorldLayer nonWalkableWorld() {
         return new IWorldLayer() {
             @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
