@@ -3,6 +3,7 @@ package fr.riege.pathfinder.evaluator;
 import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,32 +20,32 @@ class ParkourEvaluatorTest {
     /** Walkable everywhere EXCEPT the intermediate gap block — a valid parkour scenario. */
     private IWorldLayer gapWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) {
                 return !pos.equals(INTERMEDIATE);
             }
-            @Override public boolean isSolid(BlockPos pos) { return false; }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     /** Walkable everywhere — no gap, so parkour should be impossible. */
     private IWorldLayer walkableWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) { return true; }
-            @Override public boolean isSolid(BlockPos pos) { return false; }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     /** Nothing walkable — destination not reachable. */
     private IWorldLayer nonWalkableWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) { return false; }
-            @Override public boolean isSolid(BlockPos pos) { return false; }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 

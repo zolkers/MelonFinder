@@ -16,6 +16,7 @@ import fr.riege.pathfinder.evaluator.WalkEvaluator;
 import fr.riege.pathfinder.goal.BlockPosGoal;
 import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
 import fr.riege.pathfinder.registry.OrderedRegistry;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -30,24 +31,24 @@ class PathfinderEngineTest {
     private IWorldLayer flatWorld() {
         return new IWorldLayer() {
             @Override
-            public boolean isWalkable(BlockPos pos) {
+            public boolean isWalkable(@NonNull BlockPos pos) {
                 return pos.getY() == FLOOR_Y
                     && pos.getX() >= 0 && pos.getX() <= 19
                     && pos.getZ() >= 0 && pos.getZ() <= 19;
             }
 
             @Override
-            public boolean isSolid(BlockPos pos) {
+            public boolean isSolid(@NonNull BlockPos pos) {
                 return false;
             }
 
             @Override
-            public FluidType getFluidType(BlockPos pos) {
+            public @NonNull FluidType getFluidType(@NonNull BlockPos pos) {
                 return FluidType.NONE;
             }
 
             @Override
-            public int getLightLevel(BlockPos pos) {
+            public int getLightLevel(@NonNull BlockPos pos) {
                 return 15;
             }
         };
@@ -55,12 +56,12 @@ class PathfinderEngineTest {
 
     private IBlockPhysicsLayer normalBlock() {
         return new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 1.0f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return true; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
     }
 
@@ -80,11 +81,11 @@ class PathfinderEngineTest {
     private ICollisionLayer noCollision() {
         return new ICollisionLayer() {
             @Override
-            public List<AABB> getCollisionBoxes(BlockPos pos) { return Collections.emptyList(); }
+            public @NonNull List<AABB> getCollisionBoxes(@NonNull BlockPos pos) { return Collections.emptyList(); }
             @Override
-            public boolean hasCollisionAt(AABB box) { return false; }
+            public boolean hasCollisionAt(@NonNull AABB box) { return false; }
             @Override
-            public double getMaxReach(BlockPos from, Direction dir, double hitboxHalf) { return 5.0; }
+            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return 5.0; }
         };
     }
 

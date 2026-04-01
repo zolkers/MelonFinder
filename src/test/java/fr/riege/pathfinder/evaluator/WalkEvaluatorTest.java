@@ -5,6 +5,7 @@ import fr.riege.api.layer.IEntityPhysicsLayer;
 import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,25 +18,25 @@ class WalkEvaluatorTest {
 
     private IWorldLayer walkableWorld(boolean toWalkable, boolean headSolid) {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) {
                 return pos.equals(TO) ? toWalkable : false;
             }
-            @Override public boolean isSolid(BlockPos pos) {
+            @Override public boolean isSolid(@NonNull BlockPos pos) {
                 return pos.equals(HEAD) && headSolid;
             }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     private IBlockPhysicsLayer normalBlock() {
         return new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 1.0f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return true; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
     }
 
@@ -77,12 +78,12 @@ class WalkEvaluatorTest {
     @Test
     void soulSandSpeed_costHigherThanNormal() {
         IBlockPhysicsLayer soulSandBlock = new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 0.4f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return true; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 0.4f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
         WalkEvaluator normalEval = new WalkEvaluator(walkableWorld(true, false), normalBlock(), standardEntity());
         WalkEvaluator soulSandEval = new WalkEvaluator(walkableWorld(true, false), soulSandBlock, standardEntity());

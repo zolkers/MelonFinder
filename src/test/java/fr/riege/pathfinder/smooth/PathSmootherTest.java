@@ -4,7 +4,7 @@ import fr.riege.api.layer.ICollisionLayer;
 import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
-import fr.riege.api.math.Vec3;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -18,27 +18,27 @@ class PathSmootherTest {
     private ICollisionLayer openWorld() {
         return new ICollisionLayer() {
             @Override
-            public List<AABB> getCollisionBoxes(BlockPos pos) { return Collections.emptyList(); }
+            public @NonNull List<AABB> getCollisionBoxes(@NonNull BlockPos pos) { return Collections.emptyList(); }
             @Override
-            public boolean hasCollisionAt(AABB box) { return false; }
+            public boolean hasCollisionAt(@NonNull AABB box) { return false; }
             @Override
-            public double getMaxReach(BlockPos from, Direction dir, double hitboxHalf) { return 5.0; }
+            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return 5.0; }
         };
     }
 
     private ICollisionLayer wallAt(double wallX) {
         return new ICollisionLayer() {
             @Override
-            public List<AABB> getCollisionBoxes(BlockPos pos) { return Collections.emptyList(); }
+            public @NonNull List<AABB> getCollisionBoxes(@NonNull BlockPos pos) { return Collections.emptyList(); }
 
             @Override
-            public boolean hasCollisionAt(AABB box) {
+            public boolean hasCollisionAt(@NonNull AABB box) {
                 // Treat x >= wallX and x <= wallX+1 as a wall
                 return box.getMin().getX() < wallX + 1.0 && box.getMax().getX() > wallX;
             }
 
             @Override
-            public double getMaxReach(BlockPos from, Direction dir, double hitboxHalf) { return 5.0; }
+            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return 5.0; }
         };
     }
 

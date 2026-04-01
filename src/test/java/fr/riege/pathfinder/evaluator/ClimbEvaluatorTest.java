@@ -2,6 +2,7 @@ package fr.riege.pathfinder.evaluator;
 
 import fr.riege.api.layer.IBlockPhysicsLayer;
 import fr.riege.api.math.BlockPos;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,23 +15,23 @@ class ClimbEvaluatorTest {
 
     private IBlockPhysicsLayer nonPassableBlock() {
         return new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 1.0f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return false; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return false; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
     }
 
     private IBlockPhysicsLayer passableBlock() {
         return new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 1.0f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return true; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
     }
 

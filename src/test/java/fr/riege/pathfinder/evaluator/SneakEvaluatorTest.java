@@ -5,6 +5,7 @@ import fr.riege.api.layer.IEntityPhysicsLayer;
 import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,30 +17,30 @@ class SneakEvaluatorTest {
 
     private IWorldLayer walkableWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) { return true; }
-            @Override public boolean isSolid(BlockPos pos) { return false; }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     private IWorldLayer nonWalkableWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(BlockPos pos) { return false; }
-            @Override public boolean isSolid(BlockPos pos) { return false; }
-            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     private IBlockPhysicsLayer normalBlock() {
         return new IBlockPhysicsLayer() {
-            @Override public float getSpeedMultiplier(BlockPos pos) { return 1.0f; }
-            @Override public float getSlipperiness(BlockPos pos) { return 0.6f; }
-            @Override public boolean isPassable(BlockPos pos) { return true; }
-            @Override public double getStandingY(BlockPos pos) { return pos.getY(); }
-            @Override public float getDragFactor(BlockPos pos) { return 1.0f; }
-            @Override public float getBlockDamage(BlockPos pos) { return 0.0f; }
+            @Override public float getSpeedMultiplier(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getSlipperiness(@NonNull BlockPos pos) { return 0.6f; }
+            @Override public boolean isPassable(@NonNull BlockPos pos) { return true; }
+            @Override public double getStandingY(@NonNull BlockPos pos) { return pos.getY(); }
+            @Override public float getDragFactor(@NonNull BlockPos pos) { return 1.0f; }
+            @Override public float getBlockDamage(@NonNull BlockPos pos) { return 0.0f; }
         };
     }
 
