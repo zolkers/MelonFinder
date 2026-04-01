@@ -6,6 +6,8 @@ import fr.riege.api.path.Node;
 import fr.riege.api.registry.MovementKeys;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class OpenSetTest {
@@ -20,7 +22,7 @@ class OpenSetTest {
         set.add(node(0, 10, 5));
         set.add(node(1, 3, 2));
         set.add(node(2, 8, 4));
-        assertEquals(1, set.poll().pos().x());
+        assertEquals(1, Objects.requireNonNull(set.poll()).pos().x());
     }
 
     @Test

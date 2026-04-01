@@ -127,7 +127,7 @@ class AStarSearchTest {
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertEquals(1, path.size());
-        assertEquals(start, path.get(0));
+        assertEquals(start, path.getFirst());
     }
 
     @Test
