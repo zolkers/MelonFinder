@@ -34,6 +34,7 @@ public final class PathSmoother {
             if (!hasLos(path.get(anchor), path.get(i))) {
                 result.add(path.get(i - 1));
                 anchor = i - 1;
+                i = anchor + 1;
             }
             i++;
         }

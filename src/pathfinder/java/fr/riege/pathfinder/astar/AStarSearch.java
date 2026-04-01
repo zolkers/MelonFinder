@@ -46,14 +46,14 @@ public final class AStarSearch {
                 lastStatus = PathStatus.FOUND;
                 return reconstructPath(cameFrom, currentPos);
             }
-            if (closedSet.size() >= maxNodes) {
-                lastStatus = PathStatus.TIMEOUT;
-                return Collections.emptyList();
-            }
             if (closedSet.contains(currentPos)) {
                 continue;
             }
             closedSet.add(currentPos);
+            if (closedSet.size() >= maxNodes) {
+                lastStatus = PathStatus.TIMEOUT;
+                return Collections.emptyList();
+            }
             processNeighbors(current, goal, openSet, closedSet, cameFrom, gCosts);
         }
         lastStatus = PathStatus.UNREACHABLE;
@@ -65,13 +65,10 @@ public final class AStarSearch {
             @NotNull Map<BlockPos, BlockPos> cameFrom, @NotNull Map<BlockPos, Double> gCosts) {
         for (Node neighbor : graph.getNeighbors(current)) {
             BlockPos neighborPos = neighbor.getPos();
-            if (closedSet.contains(neighborPos)) {
-                continue;
-            }
             double newG = neighbor.getGCost();
-            if (newG >= gCosts.getOrDefault(neighborPos, Double.MAX_VALUE)) {
-                continue;
-            }
+            boolean shouldSkip = closedSet.contains(neighborPos)
+                    || newG >= gCosts.getOrDefault(neighborPos, Double.MAX_VALUE);
+            if (shouldSkip) continue;
             gCosts.put(neighborPos, newG);
             cameFrom.put(neighborPos, current.getPos());
             double h = heuristic.estimate(neighborPos, goal);
