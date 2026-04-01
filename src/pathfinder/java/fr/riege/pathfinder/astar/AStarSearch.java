@@ -39,6 +39,10 @@ public final class AStarSearch {
         gCosts.put(start, 0.0);
         while (!openSet.isEmpty()) {
             Node current = openSet.poll();
+            if(current == null) {
+                lastStatus = PathStatus.UNREACHABLE;
+                return Collections.emptyList();
+            }
             BlockPos currentPos = current.pos();
             if (goal.isReached(currentPos)) {
                 lastStatus = PathStatus.FOUND;
@@ -63,7 +67,7 @@ public final class AStarSearch {
             @NotNull Map<BlockPos, BlockPos> cameFrom, @NotNull Map<BlockPos, Double> gCosts) {
         for (Node neighbor : graph.getNeighbors(current)) {
             BlockPos neighborPos = neighbor.pos();
-            double newG = neighbor.getGCost();
+            double newG = neighbor.gCost();
             boolean shouldSkip = closedSet.contains(neighborPos)
                     || newG >= gCosts.getOrDefault(neighborPos, Double.MAX_VALUE);
             if (shouldSkip) continue;
