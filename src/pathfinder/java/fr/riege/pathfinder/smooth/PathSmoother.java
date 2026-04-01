@@ -27,7 +27,7 @@ public final class PathSmoother {
             return new ArrayList<>(path);
         }
         List<BlockPos> result = new ArrayList<>();
-        result.add(path.get(0));
+        result.add(path.getFirst());
         int anchor = 0;
         int i = 2;
         while (i < path.size()) {
@@ -38,7 +38,7 @@ public final class PathSmoother {
             }
             i++;
         }
-        result.add(path.get(path.size() - 1));
+        result.add(path.getLast());
         return result;
     }
 

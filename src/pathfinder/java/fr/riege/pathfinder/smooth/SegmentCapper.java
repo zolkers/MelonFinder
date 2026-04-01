@@ -19,7 +19,7 @@ public final class SegmentCapper {
             return new ArrayList<>(path);
         }
         List<BlockPos> result = new ArrayList<>();
-        result.add(path.get(0));
+        result.add(path.getFirst());
         for (int i = 0; i < path.size() - 1; i++) {
             insertMidpoints(path.get(i), path.get(i + 1), result);
             result.add(path.get(i + 1));

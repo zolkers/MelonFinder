@@ -36,16 +36,15 @@ public final class SubBlockSampler {
         double noiseZ = (random.nextDouble() * 2.0 - 1.0) * MAX_VARIANCE;
 
         double rx = cx + biasX + noiseX;
-        double ry = cy;
         double rz = cz + biasZ + noiseZ;
 
-        Vec3 minVec = new Vec3(rx - hitboxHalf, ry, rz - hitboxHalf);
-        Vec3 maxVec = new Vec3(rx + hitboxHalf, ry + ENTITY_HEIGHT, rz + hitboxHalf);
+        Vec3 minVec = new Vec3(rx - hitboxHalf, cy, rz - hitboxHalf);
+        Vec3 maxVec = new Vec3(rx + hitboxHalf, cy + ENTITY_HEIGHT, rz + hitboxHalf);
         AABB box = new AABB(minVec, maxVec);
 
         if (collisionLayer.hasCollisionAt(box)) {
             return new Vec3(cx, cy, cz);
         }
-        return new Vec3(rx, ry, rz);
+        return new Vec3(rx, cy, rz);
     }
 }
