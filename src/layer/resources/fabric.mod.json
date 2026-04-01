@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"main": [
 			"fr.riege.MelonFinder"
+		],
+		"client": [
+			"fr.riege.client.MelonFinderClient"
 		]
 	},
 	"mixins": [
