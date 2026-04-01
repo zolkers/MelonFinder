@@ -20,7 +20,7 @@ class OpenSetTest {
         set.add(node(0, 10, 5));
         set.add(node(1, 3, 2));
         set.add(node(2, 8, 4));
-        assertEquals(1, set.poll().getPos().x());
+        assertEquals(1, set.poll().pos().x());
     }
 
     @Test

@@ -114,7 +114,7 @@ class PathfinderEngineTest {
 
         PathResult result = engine.compute(from, goal, ctx);
 
-        assertEquals(PathStatus.FOUND, result.getPath().getStatus());
+        assertEquals(PathStatus.FOUND, result.path().status());
     }
 
     @Test
@@ -126,12 +126,12 @@ class PathfinderEngineTest {
 
         // First compute completes normally (engine is synchronous, session clears after each call)
         PathResult first = engine.compute(from, goal, ctx);
-        assertEquals(PathStatus.FOUND, first.getPath().getStatus());
+        assertEquals(PathStatus.FOUND, first.path().status());
         assertFalse(engine.isRunning());
 
         // Second compute starts fresh — cancel() is called at start, no exception thrown
         PathResult second = engine.compute(from, goal, ctx);
-        assertEquals(PathStatus.FOUND, second.getPath().getStatus());
+        assertEquals(PathStatus.FOUND, second.path().status());
         assertFalse(engine.isRunning());
     }
 
@@ -153,7 +153,7 @@ class PathfinderEngineTest {
         BlockPosGoal goal = new BlockPosGoal(new BlockPos(0, 99, 0));
 
         PathResult result = engine.compute(from, goal, ctx);
-        PathStatus status = result.getPath().getStatus();
+        PathStatus status = result.path().status();
 
         assertTrue(
             status == PathStatus.UNREACHABLE || status == PathStatus.TIMEOUT,

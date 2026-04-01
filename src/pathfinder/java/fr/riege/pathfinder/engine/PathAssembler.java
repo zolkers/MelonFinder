@@ -23,7 +23,7 @@ final class PathAssembler {
         double hitboxHalf = ctx.getEntityPhysicsLayer().getHitboxWidth() / 2.0;
         SubBlockSampler sampler = new SubBlockSampler(ctx.getCollisionLayer(), hitboxHalf, ctx.getRandomSeed());
         List<Segment> segments = buildSegments(waypoints, sampler);
-        double totalCost = segments.stream().mapToDouble(Segment::getLength).sum();
+        double totalCost = segments.stream().mapToDouble(Segment::length).sum();
         return new Path(segments, totalCost, PathStatus.FOUND);
     }
 

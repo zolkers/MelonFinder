@@ -12,7 +12,7 @@ public final class OpenSet {
     private final PriorityQueue<Node> queue;
 
     public OpenSet() {
-        this.queue = new PriorityQueue<>(Comparator.comparingDouble(Node::getFCost));
+        this.queue = new PriorityQueue<>(Comparator.comparingDouble(Node::fCost));
     }
 
     public void add(@NotNull Node node) {

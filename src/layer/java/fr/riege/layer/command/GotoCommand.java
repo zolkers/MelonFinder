@@ -77,7 +77,7 @@ public final class GotoCommand {
 
     private static void sendResult(
             @NotNull CommandSourceStack source, @NotNull PathResult result) {
-        PathStatus status = result.getPath().getStatus();
+        PathStatus status = result.path().status();
         String message = buildResultMessage(status, result);
         source.sendSuccess(() -> Component.literal(message), false);
     }
@@ -85,9 +85,9 @@ public final class GotoCommand {
     private static @NotNull String buildResultMessage(
             @NotNull PathStatus status, @NotNull PathResult result) {
         return switch (status) {
-            case FOUND -> "Path found — " + result.getPath().getSegments().size()
-                + " segments, " + result.getNodesExplored() + " nodes explored, "
-                + result.getComputeMs() + "ms";
+            case FOUND -> "Path found — " + result.path().segments().size()
+                + " segments, " + result.nodesExplored() + " nodes explored, "
+                + result.computeMs() + "ms";
             case UNREACHABLE -> "Destination unreachable";
             case TIMEOUT -> "Search timed out (too far or complex)";
             case CANCELLED -> "Cancelled";

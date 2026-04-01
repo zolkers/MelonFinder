@@ -26,8 +26,8 @@ public final class NodeGraph {
 
     public @NotNull List<Node> getNeighbors(@NotNull Node current) {
         List<Node> neighbors = new ArrayList<>();
-        BlockPos pos = current.getPos();
-        double parentGCost = current.getGCost();
+        BlockPos pos = current.pos();
+        double parentGCost = current.gCost();
 
         addHorizontalNeighbors(pos, parentGCost, neighbors);
         addVerticalNeighbors(pos, parentGCost, neighbors);

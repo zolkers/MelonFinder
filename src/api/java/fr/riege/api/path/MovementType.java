@@ -3,32 +3,16 @@ package fr.riege.api.path;
 import fr.riege.api.registry.RegistryKey;
 import org.jetbrains.annotations.NotNull;
 
-public final class MovementType {
-
-    private final RegistryKey key;
-
-    public MovementType(@NotNull RegistryKey key) {
-        this.key = key;
-    }
-
-    @NotNull
-    public RegistryKey getKey() {
-        return key;
-    }
+public record MovementType(RegistryKey key) {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof MovementType other)) return false;
-        return key.equals(other.key);
+        if (!(o instanceof MovementType(RegistryKey key1))) return false;
+        return key.equals(key1);
     }
 
     @Override
-    public int hashCode() {
-        return key.hashCode();
-    }
-
-    @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "MovementType{key=" + key + "}";
     }
 }
