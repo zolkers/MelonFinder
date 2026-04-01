@@ -7,48 +7,10 @@ import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.registry.IRegistry;
 import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.heuristic.IHeuristic;
-import org.jetbrains.annotations.NotNull;
 
-public final class PathfinderContext {
+public record PathfinderContext(IWorldLayer worldLayer, IBlockPhysicsLayer blockPhysicsLayer,
+                                IEntityPhysicsLayer entityPhysicsLayer, ICollisionLayer collisionLayer,
+                                IRegistry<IMovementEvaluator> evaluatorRegistry, IHeuristic heuristic, int maxNodes,
+                                int maxSegmentLength, long randomSeed) {
 
-    private final IWorldLayer worldLayer;
-    private final IBlockPhysicsLayer blockPhysicsLayer;
-    private final IEntityPhysicsLayer entityPhysicsLayer;
-    private final ICollisionLayer collisionLayer;
-    private final IRegistry<IMovementEvaluator> evaluatorRegistry;
-    private final IHeuristic heuristic;
-    private final int maxNodes;
-    private final int maxSegmentLength;
-    private final long randomSeed;
-
-    public PathfinderContext(
-            @NotNull IWorldLayer worldLayer,
-            @NotNull IBlockPhysicsLayer blockPhysicsLayer,
-            @NotNull IEntityPhysicsLayer entityPhysicsLayer,
-            @NotNull ICollisionLayer collisionLayer,
-            @NotNull IRegistry<IMovementEvaluator> evaluatorRegistry,
-            @NotNull IHeuristic heuristic,
-            int maxNodes,
-            int maxSegmentLength,
-            long randomSeed) {
-        this.worldLayer = worldLayer;
-        this.blockPhysicsLayer = blockPhysicsLayer;
-        this.entityPhysicsLayer = entityPhysicsLayer;
-        this.collisionLayer = collisionLayer;
-        this.evaluatorRegistry = evaluatorRegistry;
-        this.heuristic = heuristic;
-        this.maxNodes = maxNodes;
-        this.maxSegmentLength = maxSegmentLength;
-        this.randomSeed = randomSeed;
-    }
-
-    public @NotNull IWorldLayer getWorldLayer() { return worldLayer; }
-    public @NotNull IBlockPhysicsLayer getBlockPhysicsLayer() { return blockPhysicsLayer; }
-    public @NotNull IEntityPhysicsLayer getEntityPhysicsLayer() { return entityPhysicsLayer; }
-    public @NotNull ICollisionLayer getCollisionLayer() { return collisionLayer; }
-    public @NotNull IRegistry<IMovementEvaluator> getEvaluatorRegistry() { return evaluatorRegistry; }
-    public @NotNull IHeuristic getHeuristic() { return heuristic; }
-    public int getMaxNodes() { return maxNodes; }
-    public int getMaxSegmentLength() { return maxSegmentLength; }
-    public long getRandomSeed() { return randomSeed; }
 }

@@ -46,17 +46,17 @@ public final class PathfinderEngine {
     private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
-        NodeGraph graph = new NodeGraph(ctx.getEvaluatorRegistry());
-        AStarSearch search = new AStarSearch(graph, ctx.getMaxNodes());
+        NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry());
+        AStarSearch search = new AStarSearch(graph, ctx.maxNodes());
         List<BlockPos> raw = search.search(from, goal);
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
             return new PathResult(empty, System.currentTimeMillis() - startMs, 0);
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
-        double hitboxHalf = ctx.getEntityPhysicsLayer().getHitboxWidth() / 2.0;
-        List<BlockPos> smoothed = new PathSmoother(ctx.getCollisionLayer(), hitboxHalf).smooth(reduced);
-        List<BlockPos> capped = new SegmentCapper(ctx.getMaxSegmentLength()).cap(smoothed);
+        double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
+        List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), hitboxHalf).smooth(reduced);
+        List<BlockPos> capped = new SegmentCapper(ctx.maxSegmentLength()).cap(smoothed);
         Path path = PathAssembler.assemble(capped, ctx);
         return new PathResult(path, System.currentTimeMillis() - startMs, raw.size());
     }
