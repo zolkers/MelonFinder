@@ -13,13 +13,13 @@ public final class NodeReducer {
             return new ArrayList<>(path);
         }
         List<BlockPos> result = new ArrayList<>();
-        result.add(path.get(0));
+        result.add(path.getFirst());
         for (int i = 1; i < path.size() - 1; i++) {
             if (isImportantNode(path, i)) {
                 result.add(path.get(i));
             }
         }
-        result.add(path.get(path.size() - 1));
+        result.add(path.getLast());
         return result;
     }
 
