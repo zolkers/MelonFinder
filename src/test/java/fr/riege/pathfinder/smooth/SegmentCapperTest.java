@@ -12,8 +12,6 @@ class SegmentCapperTest {
 
     @Test
     void longPath_allSegmentsWithinLimit() {
-        // 11 nodes at X=0..10, Y=64, Z=0 — each adjacent pair is 1 block apart so max=4 won't split those
-        // But let's test with two waypoints 10 blocks apart: (0,64,0) and (10,64,0), maxLength=4
         SegmentCapper capper = new SegmentCapper(4);
         List<BlockPos> path = new ArrayList<>();
         path.add(new BlockPos(0, 64, 0));
