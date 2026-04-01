@@ -16,7 +16,7 @@ class AABBTest {
     }
     @Test void expand_returnsLargerBox() {
         AABB expanded = new AABB(new Vec3(0,0,0), new Vec3(1,1,1)).expand(0.3);
-        assertEquals(-0.3, expanded.getMin().getX(), 0.0001);
-        assertEquals(1.3, expanded.getMax().getX(), 0.0001);
+        assertEquals(-0.3, expanded.min().getX(), 0.0001);
+        assertEquals(1.3, expanded.max().getX(), 0.0001);
     }
 }
