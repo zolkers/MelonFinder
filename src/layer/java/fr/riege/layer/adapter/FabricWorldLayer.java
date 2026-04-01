@@ -5,6 +5,7 @@ import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,7 +33,7 @@ public final class FabricWorldLayer implements IWorldLayer {
 
     @Override
     public @NotNull FluidType getFluidType(@NotNull BlockPos pos) {
-        net.minecraft.world.level.material.FluidState state = level.getFluidState(toMc(pos));
+        FluidState state = level.getFluidState(toMc(pos));
         if (state.is(Fluids.WATER) || state.is(Fluids.FLOWING_WATER)) return FluidType.WATER;
         if (state.is(Fluids.LAVA) || state.is(Fluids.FLOWING_LAVA)) return FluidType.LAVA;
         return FluidType.NONE;
