@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class SimpleRegistry<V> implements IRegistry<V> {
+public final class OrderedRegistry<V> implements IRegistry<V> {
 
     private final Map<RegistryKey, V> entries = new LinkedHashMap<>();
 

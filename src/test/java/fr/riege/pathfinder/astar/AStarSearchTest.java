@@ -15,7 +15,7 @@ import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.evaluator.JumpEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
 import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
-import fr.riege.pathfinder.registry.SimpleRegistry;
+import fr.riege.pathfinder.registry.OrderedRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -98,7 +98,7 @@ class AStarSearchTest {
         IEntityPhysicsLayer entity = standardEntity();
         ICollisionLayer collision = noCollision();
 
-        SimpleRegistry<IMovementEvaluator> registry = new SimpleRegistry<>();
+        OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
         registry.register(MovementKeys.WALK, new WalkEvaluator(world, block, entity));
         registry.register(MovementKeys.JUMP, new JumpEvaluator(world, block, entity, collision));
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));

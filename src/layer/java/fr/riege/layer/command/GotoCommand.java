@@ -22,7 +22,7 @@ import fr.riege.pathfinder.evaluator.SprintEvaluator;
 import fr.riege.pathfinder.evaluator.SwimEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
 import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
-import fr.riege.pathfinder.registry.SimpleRegistry;
+import fr.riege.pathfinder.registry.OrderedRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -97,7 +97,7 @@ public final class GotoCommand {
         FabricBlockPhysicsLayer blockPhysics = new FabricBlockPhysicsLayer(player.level());
         FabricEntityPhysicsLayer entityPhysics = new FabricEntityPhysicsLayer(player);
         FabricCollisionLayer collision = new FabricCollisionLayer(player.level());
-        SimpleRegistry<IMovementEvaluator> registry = buildEvaluatorRegistry(
+        OrderedRegistry<IMovementEvaluator> registry = buildEvaluatorRegistry(
             world, blockPhysics, entityPhysics, collision);
         return new PathfinderContext(
             world, blockPhysics, entityPhysics, collision,
@@ -105,12 +105,12 @@ public final class GotoCommand {
             MAX_NODES, MAX_SEGMENT_LENGTH, RANDOM_SEED);
     }
 
-    private static @NotNull SimpleRegistry<IMovementEvaluator> buildEvaluatorRegistry(
+    private static @NotNull OrderedRegistry<IMovementEvaluator> buildEvaluatorRegistry(
             @NotNull FabricWorldLayer world,
             @NotNull FabricBlockPhysicsLayer blockPhysics,
             @NotNull FabricEntityPhysicsLayer entityPhysics,
             @NotNull FabricCollisionLayer collision) {
-        SimpleRegistry<IMovementEvaluator> registry = new SimpleRegistry<>();
+        OrderedRegistry<IMovementEvaluator> registry = new SimpleRegistry<>();
         registry.register(MovementKeys.WALK,    new WalkEvaluator(world, blockPhysics, entityPhysics));
         registry.register(MovementKeys.JUMP,    new JumpEvaluator(world, blockPhysics, entityPhysics, collision));
         registry.register(MovementKeys.FALL,    new FallEvaluator(world, entityPhysics));
