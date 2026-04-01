@@ -38,10 +38,9 @@ public final class RegistryKey {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof RegistryKey)) {
+        if (!(obj instanceof RegistryKey other)) {
             return false;
         }
-        RegistryKey other = (RegistryKey) obj;
         return namespace.equals(other.namespace) && path.equals(other.path);
     }
 
