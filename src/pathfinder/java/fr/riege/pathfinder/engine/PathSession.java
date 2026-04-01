@@ -13,7 +13,7 @@ public final class PathSession {
     public PathSession(@NotNull BlockPos start, @NotNull BlockPos goal) {
         this.start = start;
         this.goal = goal;
-        this.status = PathStatus.FOUND;
+        this.status = PathStatus.CANCELLED;
     }
 
     public @NotNull BlockPos getStart() { return start; }

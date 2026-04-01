@@ -19,6 +19,7 @@ public final class PathfinderContext {
     private final IHeuristic heuristic;
     private final int maxNodes;
     private final int maxSegmentLength;
+    private final long randomSeed;
 
     public PathfinderContext(
             @NotNull IWorldLayer worldLayer,
@@ -28,7 +29,8 @@ public final class PathfinderContext {
             @NotNull IRegistry<IMovementEvaluator> evaluatorRegistry,
             @NotNull IHeuristic heuristic,
             int maxNodes,
-            int maxSegmentLength) {
+            int maxSegmentLength,
+            long randomSeed) {
         this.worldLayer = worldLayer;
         this.blockPhysicsLayer = blockPhysicsLayer;
         this.entityPhysicsLayer = entityPhysicsLayer;
@@ -37,6 +39,7 @@ public final class PathfinderContext {
         this.heuristic = heuristic;
         this.maxNodes = maxNodes;
         this.maxSegmentLength = maxSegmentLength;
+        this.randomSeed = randomSeed;
     }
 
     public @NotNull IWorldLayer getWorldLayer() { return worldLayer; }
@@ -47,4 +50,5 @@ public final class PathfinderContext {
     public @NotNull IHeuristic getHeuristic() { return heuristic; }
     public int getMaxNodes() { return maxNodes; }
     public int getMaxSegmentLength() { return maxSegmentLength; }
+    public long getRandomSeed() { return randomSeed; }
 }

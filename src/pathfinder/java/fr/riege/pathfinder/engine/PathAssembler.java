@@ -21,7 +21,7 @@ final class PathAssembler {
     static @NotNull Path assemble(@NotNull List<BlockPos> waypoints, @NotNull PathfinderContext ctx) {
         if (waypoints.isEmpty()) return new Path(List.of(), 0, PathStatus.UNREACHABLE);
         double hitboxHalf = ctx.getEntityPhysicsLayer().getHitboxWidth() / 2.0;
-        SubBlockSampler sampler = new SubBlockSampler(ctx.getCollisionLayer(), hitboxHalf, 42L);
+        SubBlockSampler sampler = new SubBlockSampler(ctx.getCollisionLayer(), hitboxHalf, ctx.getRandomSeed());
         List<Segment> segments = buildSegments(waypoints, sampler);
         double totalCost = segments.stream().mapToDouble(Segment::getLength).sum();
         return new Path(segments, totalCost, PathStatus.FOUND);
