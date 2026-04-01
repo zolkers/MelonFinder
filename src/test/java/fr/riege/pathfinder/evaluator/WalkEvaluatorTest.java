@@ -19,7 +19,7 @@ class WalkEvaluatorTest {
     private IWorldLayer walkableWorld(boolean toWalkable, boolean headSolid) {
         return new IWorldLayer() {
             @Override public boolean isWalkable(@NonNull BlockPos pos) {
-                return pos.equals(TO) ? toWalkable : false;
+                return pos.equals(TO) && toWalkable;
             }
             @Override public boolean isSolid(@NonNull BlockPos pos) {
                 return pos.equals(HEAD) && headSolid;
