@@ -61,8 +61,8 @@ public final class FabricCollisionLayer implements ICollisionLayer {
 
     private @NotNull net.minecraft.world.phys.AABB toMcBox(@NotNull AABB box) {
         return new net.minecraft.world.phys.AABB(
-            box.min().getX(), box.min().getY(), box.min().getZ(),
-            box.max().getX(), box.max().getY(), box.max().getZ()
+            box.min().x(), box.min().y(), box.min().z(),
+            box.max().x(), box.max().y(), box.max().z()
         );
     }
 

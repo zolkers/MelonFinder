@@ -2,29 +2,7 @@ package fr.riege.api.math;
 
 import org.jetbrains.annotations.NotNull;
 
-public final class Vec3 {
-
-    private final double x;
-    private final double y;
-    private final double z;
-
-    public Vec3(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
+public record Vec3(double x, double y, double z) {
 
     public double distanceTo(@NotNull Vec3 other) {
         double dx = this.x - other.x;
@@ -38,42 +16,17 @@ public final class Vec3 {
         return new Vec3(x + dx, y + dy, z + dz);
     }
 
-    @NotNull
-    public Vec3 subtract(@NotNull Vec3 other) {
-        return new Vec3(x - other.x, y - other.y, z - other.z);
-    }
-
-    @NotNull
-    public Vec3 normalize() {
-        double length = Math.sqrt(x * x + y * y + z * z);
-        if (length == 0.0) {
-            return new Vec3(0, 0, 0);
-        }
-        return new Vec3(x / length, y / length, z / length);
-    }
-
-    @NotNull
-    public Vec3 scale(double factor) {
-        return new Vec3(x * factor, y * factor, z * factor);
-    }
-
-    @NotNull
-    public BlockPos toBlockPos() {
-        return new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Vec3)) {
+        if (!(obj instanceof Vec3(double x1, double y1, double z1))) {
             return false;
         }
-        Vec3 other = (Vec3) obj;
-        return Double.compare(x, other.x) == 0
-                && Double.compare(y, other.y) == 0
-                && Double.compare(z, other.z) == 0;
+        return Double.compare(x, x1) == 0
+                && Double.compare(y, y1) == 0
+                && Double.compare(z, z1) == 0;
     }
 
     @Override
@@ -85,7 +38,7 @@ public final class Vec3 {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Vec3{x=" + x + ", y=" + y + ", z=" + z + "}";
     }
 }

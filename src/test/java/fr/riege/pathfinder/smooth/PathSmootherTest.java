@@ -34,7 +34,7 @@ class PathSmootherTest {
             @Override
             public boolean hasCollisionAt(@NonNull AABB box) {
                 // Treat x >= wallX and x <= wallX+1 as a wall
-                return box.min().getX() < wallX + 1.0 && box.max().getX() > wallX;
+                return box.min().x() < wallX + 1.0 && box.max().x() > wallX;
             }
 
             @Override
