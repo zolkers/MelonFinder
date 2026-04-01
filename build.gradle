@@ -44,18 +44,18 @@ loom {
 }
 
 // client source set is created by splitEnvironmentSourceSets(); configure it after loom
+// api and pathfinder are intentionally Minecraft-free — do NOT add them to loom mods block
 sourceSets.client {
     java.srcDirs = ['src/client/java']
     compileClasspath += sourceSets.main.output
     compileClasspath += sourceSets.api.output
+    compileClasspath += sourceSets.pathfinder.output
 }
 
 configurations {
     apiImplementation.extendsFrom implementation
     pathfinderImplementation.extendsFrom implementation
 }
-
-repositories {}
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -88,8 +88,6 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
