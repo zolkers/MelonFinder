@@ -24,7 +24,7 @@ public final class ParkourEvaluator implements IMovementEvaluator {
         boolean isHorizontalGap = dy == 0 && ((dx == REQUIRED_GAP && dz == 0) || (dz == REQUIRED_GAP && dx == 0));
         if (!isHorizontalGap) return MovementResult.impossible();
         BlockPos intermediate = midpoint(from, to);
-        if (!worldLayer.isWalkable(intermediate)) return MovementResult.impossible();
+        if (worldLayer.isWalkable(intermediate)) return MovementResult.impossible();
         if (!worldLayer.isWalkable(to)) return MovementResult.impossible();
         return MovementResult.possible(BASE_COST + REQUIRED_GAP * GAP_COST_FACTOR);
     }

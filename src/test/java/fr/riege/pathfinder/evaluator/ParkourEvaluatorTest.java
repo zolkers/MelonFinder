@@ -13,7 +13,22 @@ class ParkourEvaluatorTest {
     private static final BlockPos TO_GAP2 = new BlockPos(2, 64, 0);
     private static final BlockPos TO_GAP1 = new BlockPos(1, 64, 0);
     private static final BlockPos TO_DIAGONAL = new BlockPos(2, 64, 2);
+    // intermediate for FROM→TO_GAP2 is (1,64,0)
+    private static final BlockPos INTERMEDIATE = new BlockPos(1, 64, 0);
 
+    /** Walkable everywhere EXCEPT the intermediate gap block — a valid parkour scenario. */
+    private IWorldLayer gapWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(BlockPos pos) {
+                return !pos.equals(INTERMEDIATE);
+            }
+            @Override public boolean isSolid(BlockPos pos) { return false; }
+            @Override public FluidType getFluidType(BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(BlockPos pos) { return 15; }
+        };
+    }
+
+    /** Walkable everywhere — no gap, so parkour should be impossible. */
     private IWorldLayer walkableWorld() {
         return new IWorldLayer() {
             @Override public boolean isWalkable(BlockPos pos) { return true; }
@@ -23,6 +38,7 @@ class ParkourEvaluatorTest {
         };
     }
 
+    /** Nothing walkable — destination not reachable. */
     private IWorldLayer nonWalkableWorld() {
         return new IWorldLayer() {
             @Override public boolean isWalkable(BlockPos pos) { return false; }
@@ -33,22 +49,29 @@ class ParkourEvaluatorTest {
     }
 
     @Test
-    void gap2Move_isPossible() {
-        ParkourEvaluator evaluator = new ParkourEvaluator(walkableWorld());
+    void gap2Move_withVoidIntermediate_isPossible() {
+        ParkourEvaluator evaluator = new ParkourEvaluator(gapWorld());
         MovementResult result = evaluator.evaluate(FROM, TO_GAP2);
         assertTrue(result.isPossible());
         assertTrue(result.getCost() > 0.0);
     }
 
     @Test
-    void gap1Move_isImpossible() {
+    void gap2Move_noGap_isImpossible() {
+        // intermediate is walkable — no actual void to jump over
         ParkourEvaluator evaluator = new ParkourEvaluator(walkableWorld());
+        assertFalse(evaluator.evaluate(FROM, TO_GAP2).isPossible());
+    }
+
+    @Test
+    void gap1Move_isImpossible() {
+        ParkourEvaluator evaluator = new ParkourEvaluator(gapWorld());
         assertFalse(evaluator.evaluate(FROM, TO_GAP1).isPossible());
     }
 
     @Test
     void diagonalGap_isImpossible() {
-        ParkourEvaluator evaluator = new ParkourEvaluator(walkableWorld());
+        ParkourEvaluator evaluator = new ParkourEvaluator(gapWorld());
         assertFalse(evaluator.evaluate(FROM, TO_DIAGONAL).isPossible());
     }
 
