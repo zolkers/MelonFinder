@@ -2,6 +2,7 @@ package fr.riege.api.path;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public final class Path {
     private final PathStatus status;
 
     public Path(@NotNull List<Segment> segments, double totalCost, @NotNull PathStatus status) {
-        this.segments = Collections.unmodifiableList(segments);
+        this.segments = Collections.unmodifiableList(new ArrayList<>(segments));
         this.totalCost = totalCost;
         this.status = status;
     }

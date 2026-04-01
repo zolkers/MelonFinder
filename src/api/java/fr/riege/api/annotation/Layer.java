@@ -10,5 +10,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.TYPE)
 public @interface Layer {
-    String value() default "";
 }

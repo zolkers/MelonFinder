@@ -17,6 +17,17 @@ public final class MovementType {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MovementType other)) return false;
+        return key.equals(other.key);
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "MovementType{key=" + key + "}";
     }

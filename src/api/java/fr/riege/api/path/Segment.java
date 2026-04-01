@@ -3,6 +3,7 @@ package fr.riege.api.path;
 import fr.riege.api.math.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public final class Segment {
     private final double length;
 
     public Segment(@NotNull List<Node> nodes, @NotNull Vec3 start, @NotNull Vec3 end, double length) {
-        this.nodes = Collections.unmodifiableList(nodes);
+        this.nodes = Collections.unmodifiableList(new ArrayList<>(nodes));
         this.start = start;
         this.end = end;
         this.length = length;
