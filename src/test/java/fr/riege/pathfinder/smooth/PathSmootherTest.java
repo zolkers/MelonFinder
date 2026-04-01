@@ -26,7 +26,7 @@ class PathSmootherTest {
         };
     }
 
-    private ICollisionLayer wallAt(double wallX) {
+    private ICollisionLayer wallAt() {
         return new ICollisionLayer() {
             @Override
             public @NonNull List<AABB> getCollisionBoxes(@NonNull BlockPos pos) { return Collections.emptyList(); }
@@ -34,7 +34,7 @@ class PathSmootherTest {
             @Override
             public boolean hasCollisionAt(@NonNull AABB box) {
                 // Treat x >= wallX and x <= wallX+1 as a wall
-                return box.min().x() < wallX + 1.0 && box.max().x() > wallX;
+                return box.min().x() < 3.0 + 1.0 && box.max().x() > 3.0;
             }
 
             @Override
@@ -63,7 +63,7 @@ class PathSmootherTest {
     void wallBlockingLos_waypointPreserved() {
         // Wall sits between x=2 and x=3. Path goes from (0,64,0) → (2,64,0) → (2,64,2) → (4,64,2)
         // LOS from (0,64,0) to (4,64,2) passes through the wall region; (2,64,0) or (2,64,2) must be kept
-        PathSmoother smoother = new PathSmoother(wallAt(3.0), 0.3);
+        PathSmoother smoother = new PathSmoother(wallAt(), 0.3);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -75,8 +75,8 @@ class PathSmootherTest {
         );
         List<BlockPos> result = smoother.smooth(path);
         // Result must contain start and end
-        assertEquals(new BlockPos(0, 64, 0), result.get(0));
-        assertEquals(new BlockPos(4, 64, 2), result.get(result.size() - 1));
+        assertEquals(new BlockPos(0, 64, 0), result.getFirst());
+        assertEquals(new BlockPos(4, 64, 2), result.getLast());
         // Some intermediate waypoint must be preserved due to wall
         assertTrue(result.size() >= 3, "Wall should force at least one intermediate waypoint");
     }

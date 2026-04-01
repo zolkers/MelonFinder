@@ -32,7 +32,7 @@ class SegmentCapperTest {
         path.add(new BlockPos(0, 64, 0));
         List<BlockPos> result = capper.cap(path);
         assertEquals(1, result.size());
-        assertEquals(new BlockPos(0, 64, 0), result.get(0));
+        assertEquals(new BlockPos(0, 64, 0), result.getFirst());
     }
 
     @Test
