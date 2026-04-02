@@ -7,7 +7,7 @@ import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.PathResult;
 import fr.riege.client.MelonFinderClient;
 import fr.riege.client.PathfinderContextFactory;
-import fr.riege.api.event.MelonFinderEvents;
+import fr.riege.client.event.MelonFinderEvents;
 import fr.riege.api.event.events.PathCompleteEvent;
 import fr.riege.pathfinder.engine.PathfinderContext;
 import fr.riege.pathfinder.engine.PathfinderEngine;
