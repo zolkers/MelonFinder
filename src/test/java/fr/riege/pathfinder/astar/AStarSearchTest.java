@@ -34,7 +34,7 @@ class AStarSearchTest {
             @Override
             public boolean isWalkable(@NonNull BlockPos pos) {
                 if (walls.contains(pos)) return false;
-                // Bounded 20x20 grid at floor Y
+
                 return pos.y() == FLOOR_Y
                     && pos.x() >= -2 && pos.x() <= 15
                     && pos.z() >= -2 && pos.z() <= 15;
@@ -132,7 +132,6 @@ class AStarSearchTest {
 
     @Test
     void unreachableGoal_returnsUnreachable() {
-        // Goal is surrounded by walls — no walkable neighbors exist leading to it
         BlockPos goalPos = new BlockPos(5, FLOOR_Y, 5);
         Set<BlockPos> walls = Set.of(
             new BlockPos(4, FLOOR_Y, 5),
