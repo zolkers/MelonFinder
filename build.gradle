@@ -13,9 +13,11 @@ base {
 sourceSets {
     api {
         java.srcDirs = ['src/api/java']
+        resources.srcDirs = ['src/api/resources']
     }
     pathfinder {
         java.srcDirs = ['src/pathfinder/java']
+        resources.srcDirs = ['src/pathfinder/resources']
         compileClasspath += sourceSets.api.output
     }
     main {
@@ -36,6 +38,12 @@ sourceSets {
 loom {
     splitEnvironmentSourceSets()
     mods {
+        "melonfinder-api" {
+            sourceSet sourceSets.api
+        }
+        "melonfinder-pathfinder" {
+            sourceSet sourceSets.pathfinder
+        }
         melonfinder {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
@@ -43,16 +51,26 @@ loom {
     }
 }
 
-// api and pathfinder are MC-free — Loom must not touch them.
-// Append their compiled output to run tasks after Loom has finished configuring them.
+// api and pathfinder fabric.mod.json must be on the JVM system classpath at launch so that
+// Fabric Loader's mod discovery (which runs before Knot processes classPathGroups) can find them.
 afterEvaluate {
-    def extraDirs = files(sourceSets.api.output.classesDirs, sourceSets.pathfinder.output.classesDirs)
-    tasks.named('runClient').configure { classpath += extraDirs }
-    tasks.named('runServer').configure { classpath += extraDirs }
+    def apiOut = sourceSets.api.output
+    def pathfinderOut = sourceSets.pathfinder.output
+    def earlyClasspath = files(
+            apiOut.classesDirs, apiOut.resourcesDir,
+            pathfinderOut.classesDirs, pathfinderOut.resourcesDir
+    )
+    tasks.named('runClient').configure {
+        dependsOn 'compileApiJava', 'processApiResources', 'compilePathfinderJava', 'processPathfinderResources'
+        classpath += earlyClasspath
+    }
+    tasks.named('runServer').configure {
+        dependsOn 'compileApiJava', 'processApiResources', 'compilePathfinderJava', 'processPathfinderResources'
+        classpath += earlyClasspath
+    }
 }
 
 // client source set is created by splitEnvironmentSourceSets(); configure it after loom
-// api and pathfinder are intentionally Minecraft-free — do NOT add them to loom mods block
 sourceSets.client {
     java.srcDirs = ['src/client/java']
     compileClasspath += sourceSets.main.output
@@ -103,8 +121,9 @@ jar {
     from("LICENSE") {
         rename { "${it}_${inputs.properties.archivesName}" }
     }
-    from sourceSets.api.output
-    from sourceSets.pathfinder.output
+    // Only classes — api/pathfinder fabric.mod.json are dev-only and must not appear in the prod jar
+    from sourceSets.api.output.classesDirs
+    from sourceSets.pathfinder.output.classesDirs
 }
 
 publishing {
