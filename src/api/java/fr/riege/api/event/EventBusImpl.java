@@ -1,11 +1,5 @@
-package fr.riege.client.event;
+package fr.riege.api.event;
 
-import fr.riege.api.event.Event;
-import fr.riege.api.event.EventHandler;
-import fr.riege.api.event.EventPhase;
-import fr.riege.api.event.EventPriority;
-import fr.riege.api.event.IEventBus;
-import fr.riege.api.event.Subscription;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
