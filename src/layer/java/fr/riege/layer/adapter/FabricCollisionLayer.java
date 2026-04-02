@@ -41,7 +41,7 @@ public final class FabricCollisionLayer implements ICollisionLayer {
     @Override
     public boolean hasCollisionAt(@NotNull AABB box) {
         net.minecraft.world.phys.AABB mcBox = toMcBox(box);
-        return !level.getBlockCollisions(null, mcBox).iterator().hasNext();
+        return level.getBlockCollisions(null, mcBox).iterator().hasNext();
     }
 
     @Override
