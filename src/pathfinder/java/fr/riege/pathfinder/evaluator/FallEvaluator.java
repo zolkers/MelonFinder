@@ -24,9 +24,18 @@ public final class FallEvaluator implements IMovementEvaluator {
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
         if (to.y() >= from.y()) return MovementResult.impossible();
         if (!worldLayer.isWalkable(to)) return MovementResult.impossible();
+        if (!airColumnClear(from, to)) return MovementResult.impossible();
         int drop = from.y() - to.y();
         float damage = entityPhysicsLayer.evaluateFallDamage(drop);
         if (damage >= MAX_SURVIVABLE_DAMAGE) return MovementResult.impossible();
         return MovementResult.possible(BASE_COST + damage * 2.0);
+    }
+
+    private boolean airColumnClear(@NotNull BlockPos from, @NotNull BlockPos to) {
+        for (int y = from.y() - 1; y > to.y(); y--) {
+            BlockPos mid = new BlockPos(to.x(), y, to.z());
+            if (worldLayer.isSolid(mid)) return false;
+        }
+        return true;
     }
 }

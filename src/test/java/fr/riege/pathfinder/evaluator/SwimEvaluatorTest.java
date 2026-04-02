@@ -1,6 +1,7 @@
 package fr.riege.pathfinder.evaluator;
 
 import fr.riege.api.layer.IBlockPhysicsLayer;
+import fr.riege.api.layer.IEntityPhysicsLayer;
 import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
@@ -34,9 +35,22 @@ class SwimEvaluatorTest {
         };
     }
 
+    private IEntityPhysicsLayer standardEntity() {
+        return new IEntityPhysicsLayer() {
+            @Override public double getHitboxWidth() { return 0.6; }
+            @Override public double getHitboxHeight() { return 1.8; }
+            @Override public double getStepHeight() { return 0.6; }
+            @Override public double getJumpVelocity() { return 0.42; }
+            @Override public float evaluateFallDamage(int blocks) { return Math.max(0, blocks - 3); }
+            @Override public double getSwimSpeed() { return 0.2; }
+            @Override public double getSprintMultiplier() { return 1.3; }
+            @Override public double getSneakSpeedMultiplier() { return 0.3; }
+        };
+    }
+
     @Test
     void inWater_isPossible() {
-        SwimEvaluator evaluator = new SwimEvaluator(worldWithFluid(FluidType.WATER), normalBlock());
+        SwimEvaluator evaluator = new SwimEvaluator(worldWithFluid(FluidType.WATER), normalBlock(), standardEntity());
         MovementResult result = evaluator.evaluate(FROM, TO);
         assertTrue(result.isPossible());
         assertTrue(result.getCost() > 0.0);
@@ -44,7 +58,24 @@ class SwimEvaluatorTest {
 
     @Test
     void noFluid_isImpossible() {
-        SwimEvaluator evaluator = new SwimEvaluator(worldWithFluid(FluidType.NONE), normalBlock());
+        SwimEvaluator evaluator = new SwimEvaluator(worldWithFluid(FluidType.NONE), normalBlock(), standardEntity());
         assertFalse(evaluator.evaluate(FROM, TO).isPossible());
+    }
+
+    @Test
+    void swimSpeedReducesCost() {
+        IEntityPhysicsLayer fastSwimmer = new IEntityPhysicsLayer() {
+            @Override public double getHitboxWidth() { return 0.6; }
+            @Override public double getHitboxHeight() { return 1.8; }
+            @Override public double getStepHeight() { return 0.6; }
+            @Override public double getJumpVelocity() { return 0.42; }
+            @Override public float evaluateFallDamage(int blocks) { return 0; }
+            @Override public double getSwimSpeed() { return 1.0; }
+            @Override public double getSprintMultiplier() { return 1.3; }
+            @Override public double getSneakSpeedMultiplier() { return 0.3; }
+        };
+        SwimEvaluator slow = new SwimEvaluator(worldWithFluid(FluidType.WATER), normalBlock(), standardEntity());
+        SwimEvaluator fast = new SwimEvaluator(worldWithFluid(FluidType.WATER), normalBlock(), fastSwimmer);
+        assertTrue(fast.evaluate(FROM, TO).getCost() < slow.evaluate(FROM, TO).getCost());
     }
 }
