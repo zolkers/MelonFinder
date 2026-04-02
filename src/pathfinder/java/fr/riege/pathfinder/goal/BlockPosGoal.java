@@ -6,10 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 public record BlockPosGoal(BlockPos target) implements IGoal {
 
-    public BlockPosGoal(@NotNull BlockPos target) {
-        this.target = target;
-    }
-
     @Override
     public boolean isReached(@NotNull BlockPos current) {
         return current.equals(target);
