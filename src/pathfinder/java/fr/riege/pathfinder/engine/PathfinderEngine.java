@@ -22,13 +22,16 @@ public final class PathfinderEngine {
 
     @Nullable
     private PathSession activeSession;
+    private boolean computing;
 
     public @NotNull PathResult compute(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         cancel();
         activeSession = new PathSession(from, goal);
+        computing = true;
         PathResult result = runPipeline(from, goal, ctx);
-        activeSession = null;
+        computing = false;
+        activeSession.setStatus(result.path().status());
         return result;
     }
 
@@ -37,10 +40,15 @@ public final class PathfinderEngine {
             activeSession.setStatus(PathStatus.CANCELLED);
             activeSession = null;
         }
+        computing = false;
     }
 
     public boolean isRunning() {
-        return activeSession != null;
+        return computing;
+    }
+
+    public @Nullable PathSession getActiveSession() {
+        return activeSession;
     }
 
     private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
