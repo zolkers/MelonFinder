@@ -1,5 +1,6 @@
-package fr.riege.api.event;
+package fr.riege.client.event;
 
+import fr.riege.api.event.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
