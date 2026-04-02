@@ -1,4 +1,6 @@
-package fr.riege.api.event;
+package fr.riege.client.event;
+
+import fr.riege.api.event.IEventBus;
 
 public final class MelonFinderEvents {
 

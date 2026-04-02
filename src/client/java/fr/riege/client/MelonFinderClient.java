@@ -6,7 +6,7 @@ import fr.riege.client.event.EventBridge;
 import fr.riege.client.render.DebugOverlay;
 import fr.riege.client.render.MelonFinderMeshRenderer;
 import fr.riege.client.render.PathRenderer;
-import fr.riege.api.event.MelonFinderEvents;
+import fr.riege.client.event.MelonFinderEvents;
 import fr.riege.api.event.events.PathCompleteEvent;
 import net.fabricmc.api.ClientModInitializer;
 import org.jetbrains.annotations.NotNull;
