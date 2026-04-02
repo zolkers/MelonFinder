@@ -128,8 +128,11 @@ A jump with no horizontal component is not reachable in normal Minecraft movemen
 ## Event System
 
 - `api` defines: `Event`, `IEventBus`, `EventHandler<T>`, `EventPhase`, `EventPriority`, `Subscription`
-- `layer` implements: `EventBusImpl`, `EventBridge` (hooks Fabric lifecycle callbacks)
-- `pathfinder` does **not** depend on the event system. Events are posted from `layer` code (command handlers, adapters) after the engine returns.
+- `layer` implements: `EventBusImpl`, `MelonFinderEvents` (the singleton bus), server-side event types (`PathCompleteEvent`, `TickEvent`)
+- `client` implements: `EventBridge` (hooks `ClientTickEvents`, `WorldRenderEvents`, `HudRenderCallback`), client-only event types (`RenderWorldEvent`, `RenderHudEvent`)
+- `pathfinder` does **not** depend on the event system. Events are posted from `layer` command handlers after the engine returns.
+
+**Rule:** Any class that imports from `net.fabricmc.fabric.api.client.*` or `net.minecraft.client.*` belongs in `client`, not `layer`.
 
 ---
 
