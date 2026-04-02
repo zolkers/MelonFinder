@@ -1,5 +1,6 @@
 package fr.riege.pathfinder.astar;
 
+import fr.riege.api.goal.BlockGoal;
 import fr.riege.api.layer.IBlockPhysicsLayer;
 import fr.riege.api.layer.ICollisionLayer;
 import fr.riege.api.layer.IEntityPhysicsLayer;
@@ -14,7 +15,6 @@ import fr.riege.pathfinder.evaluator.FallEvaluator;
 import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.evaluator.JumpEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
-import fr.riege.pathfinder.goal.BlockPosGoal;
 import fr.riege.pathfinder.registry.OrderedRegistry;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
@@ -112,7 +112,7 @@ class AStarSearchTest {
         AStarSearch search = buildSearch(Collections.emptySet());
         BlockPos start = new BlockPos(0, FLOOR_Y, 0);
         BlockPos goalPos = new BlockPos(4, FLOOR_Y, 0);
-        List<BlockPos> path = search.search(start, new BlockPosGoal(goalPos));
+        List<BlockPos> path = search.search(start, new BlockGoal(goalPos));
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertFalse(path.isEmpty());
@@ -123,7 +123,7 @@ class AStarSearchTest {
     void startEqualsGoal_returnsOneNode() {
         AStarSearch search = buildSearch(Collections.emptySet());
         BlockPos start = new BlockPos(2, FLOOR_Y, 2);
-        List<BlockPos> path = search.search(start, new BlockPosGoal(start));
+        List<BlockPos> path = search.search(start, new BlockGoal(start));
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertEquals(1, path.size());
@@ -145,7 +145,7 @@ class AStarSearchTest {
         );
         AStarSearch search = buildSearch(walls);
         BlockPos start = new BlockPos(0, FLOOR_Y, 0);
-        List<BlockPos> path = search.search(start, new BlockPosGoal(goalPos));
+        List<BlockPos> path = search.search(start, new BlockGoal(goalPos));
 
         assertEquals(PathStatus.UNREACHABLE, search.getLastStatus());
         assertTrue(path.isEmpty());

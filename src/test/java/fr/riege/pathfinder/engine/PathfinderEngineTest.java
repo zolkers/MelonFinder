@@ -1,5 +1,6 @@
 package fr.riege.pathfinder.engine;
 
+import fr.riege.api.goal.BlockGoal;
 import fr.riege.api.layer.IBlockPhysicsLayer;
 import fr.riege.api.layer.ICollisionLayer;
 import fr.riege.api.layer.IEntityPhysicsLayer;
@@ -13,7 +14,6 @@ import fr.riege.api.path.PathStatus;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.pathfinder.evaluator.IMovementEvaluator;
 import fr.riege.pathfinder.evaluator.WalkEvaluator;
-import fr.riege.pathfinder.goal.BlockPosGoal;
 import fr.riege.pathfinder.heuristic.Euclidean3DHeuristic;
 import fr.riege.pathfinder.registry.OrderedRegistry;
 import org.jspecify.annotations.NonNull;
@@ -110,7 +110,7 @@ class PathfinderEngineTest {
         PathfinderEngine engine = new PathfinderEngine();
         PathfinderContext ctx = buildContext();
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPosGoal goal = new BlockPosGoal(new BlockPos(5, FLOOR_Y, 5));
+        BlockGoal goal = new BlockGoal(new BlockPos(5, FLOOR_Y, 5));
 
         PathResult result = engine.compute(from, goal, ctx);
 
@@ -122,7 +122,7 @@ class PathfinderEngineTest {
         PathfinderEngine engine = new PathfinderEngine();
         PathfinderContext ctx = buildContext();
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPosGoal goal = new BlockPosGoal(new BlockPos(5, FLOOR_Y, 5));
+        BlockGoal goal = new BlockGoal(new BlockPos(5, FLOOR_Y, 5));
 
         // First compute completes normally (engine is synchronous, session clears after each call)
         PathResult first = engine.compute(from, goal, ctx);
@@ -150,7 +150,7 @@ class PathfinderEngineTest {
         PathfinderContext ctx = buildContext();
         // Y=99 is outside the walkable area — no path can reach it
         BlockPos from = new BlockPos(0, FLOOR_Y, 0);
-        BlockPosGoal goal = new BlockPosGoal(new BlockPos(0, 99, 0));
+        BlockGoal goal = new BlockGoal(new BlockPos(0, 99, 0));
 
         PathResult result = engine.compute(from, goal, ctx);
         PathStatus status = result.path().status();
