@@ -19,6 +19,7 @@ public final class FabricWorldLayer implements IWorldLayer {
     }
 
     @Override
+    @SuppressWarnings({"java:S1874", "deprecation"})
     public boolean isWalkable(@NotNull BlockPos pos) {
         net.minecraft.core.BlockPos mcPos = toMc(pos);
         net.minecraft.core.BlockPos below = mcPos.below();
@@ -26,6 +27,7 @@ public final class FabricWorldLayer implements IWorldLayer {
     }
 
     @Override
+    @SuppressWarnings({"java:S1874", "deprecation"})
     public boolean isSolid(@NotNull BlockPos pos) {
         net.minecraft.core.BlockPos mcPos = toMc(pos);
         return level.getBlockState(mcPos).isSolid();
