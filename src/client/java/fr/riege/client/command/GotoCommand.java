@@ -64,6 +64,7 @@ public final class GotoCommand {
             try {
                 PathfinderContext pathCtx = PathfinderContextFactory.create(player);
                 PathResult result = ENGINE.compute(from, new BlockGoal(goal), pathCtx);
+                MelonFinderClient.displayExploredCosts(ENGINE.getLastExploredCosts());
                 MelonFinderEvents.BUS.post(new PathCompleteEvent(result));
                 player.displayClientMessage(Component.literal("[MelonFinder] " + result.path().status()), false);
             } catch (Exception e) {

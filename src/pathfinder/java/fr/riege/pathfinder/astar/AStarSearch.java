@@ -17,21 +17,30 @@ public final class AStarSearch {
     private final long maxComputeMs;
     private PathStatus lastStatus;
     private int nodesExplored;
+    private volatile Map<BlockPos, Double> lastExploredCosts;
 
     public AStarSearch(@NotNull NodeGraph graph, long maxComputeMs) {
         this.graph = graph;
         this.maxComputeMs = maxComputeMs;
         this.lastStatus = PathStatus.CANCELLED;
+        this.lastExploredCosts = Collections.emptyMap();
     }
 
     public @NotNull List<BlockPos> search(@NotNull BlockPos start, @NotNull IGoal goal) {
         if (goal.isReached(start)) {
             lastStatus = PathStatus.FOUND;
             nodesExplored = 0;
+            lastExploredCosts = Collections.emptyMap();
             return List.of(start);
         }
-
         Map<Long, SearchNode> nodes = new HashMap<>();
+        List<BlockPos> path = runSearch(start, goal, nodes);
+        lastExploredCosts = buildCostsSnapshot(nodes);
+        return path;
+    }
+
+    private @NotNull List<BlockPos> runSearch(@NotNull BlockPos start, @NotNull IGoal goal,
+            @NotNull Map<Long, SearchNode> nodes) {
         BinaryHeapOpenSet openSet = new BinaryHeapOpenSet();
         long deadline = System.currentTimeMillis() + maxComputeMs;
         int iterations = 0;
@@ -66,7 +75,6 @@ public final class AStarSearch {
                 neighbor.setGCost(tentativeG);
                 neighbor.setHCost(goal.heuristicCost(move.to()));
                 neighbor.setParent(current);
-
                 openSet.upsert(neighbor);
             }
         }
@@ -74,6 +82,19 @@ public final class AStarSearch {
         lastStatus = PathStatus.UNREACHABLE;
         nodesExplored = iterations;
         return Collections.emptyList();
+    }
+
+    private @NotNull Map<BlockPos, Double> buildCostsSnapshot(@NotNull Map<Long, SearchNode> nodes) {
+        Map<BlockPos, Double> snapshot = new HashMap<>();
+        for (SearchNode node : nodes.values()) {
+            double g = node.gCost();
+            snapshot.put(node.pos(), g >= Double.MAX_VALUE / 2 ? 100000.0 : g);
+        }
+        return Collections.unmodifiableMap(snapshot);
+    }
+
+    public @NotNull Map<BlockPos, Double> getLastExploredCosts() {
+        return lastExploredCosts;
     }
 
     private @NotNull SearchNode getOrCreate(@NotNull Map<Long, SearchNode> nodes,

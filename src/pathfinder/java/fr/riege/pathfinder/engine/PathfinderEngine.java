@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @ApiStatus.Internal
 public final class PathfinderEngine {
@@ -23,6 +24,7 @@ public final class PathfinderEngine {
     @Nullable
     private PathSession activeSession;
     private boolean computing;
+    private volatile Map<BlockPos, Double> lastExploredCosts = Collections.emptyMap();
 
     public @NotNull PathResult compute(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
@@ -51,12 +53,17 @@ public final class PathfinderEngine {
         return activeSession;
     }
 
+    public @NotNull Map<BlockPos, Double> getLastExploredCosts() {
+        return lastExploredCosts;
+    }
+
     private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
         NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry());
         AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs());
         List<BlockPos> raw = search.search(from, goal);
+        lastExploredCosts = search.getLastExploredCosts();
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
             return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored());

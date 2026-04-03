@@ -1,5 +1,6 @@
 package fr.riege.client;
 
+import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.Path;
 import fr.riege.client.command.GotoCommand;
 import fr.riege.client.event.EventBridge;
@@ -13,6 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public final class MelonFinderClient implements ClientModInitializer {
 
@@ -49,5 +52,10 @@ public final class MelonFinderClient implements ClientModInitializer {
     public static void displayStatus(@Nullable String text) {
         if (instance == null) return;
         instance.debugOverlay.setStatus(text != null ? text : "");
+    }
+
+    public static void displayExploredCosts(@NotNull Map<BlockPos, Double> costs) {
+        if (instance == null) return;
+        instance.debugOverlay.setExploredCosts(costs);
     }
 }
