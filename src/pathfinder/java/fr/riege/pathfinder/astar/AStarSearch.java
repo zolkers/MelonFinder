@@ -18,12 +18,14 @@ public final class AStarSearch {
     private PathStatus lastStatus;
     private int nodesExplored;
     private volatile Map<BlockPos, Double> lastExploredCosts;
+    private volatile Map<BlockPos, BlockPos> lastParentMap;
 
     public AStarSearch(@NotNull NodeGraph graph, long maxComputeMs) {
         this.graph = graph;
         this.maxComputeMs = maxComputeMs;
         this.lastStatus = PathStatus.CANCELLED;
         this.lastExploredCosts = Collections.emptyMap();
+        this.lastParentMap = Collections.emptyMap();
     }
 
     public @NotNull List<BlockPos> search(@NotNull BlockPos start, @NotNull IGoal goal) {
@@ -31,11 +33,12 @@ public final class AStarSearch {
             lastStatus = PathStatus.FOUND;
             nodesExplored = 0;
             lastExploredCosts = Collections.emptyMap();
+            lastParentMap = Collections.emptyMap();
             return List.of(start);
         }
         Map<Long, SearchNode> nodes = new HashMap<>();
         List<BlockPos> path = runSearch(start, goal, nodes);
-        lastExploredCosts = buildCostsSnapshot(nodes);
+        buildSnapshots(nodes);
         return path;
     }
 
@@ -84,17 +87,27 @@ public final class AStarSearch {
         return Collections.emptyList();
     }
 
-    private @NotNull Map<BlockPos, Double> buildCostsSnapshot(@NotNull Map<Long, SearchNode> nodes) {
-        Map<BlockPos, Double> snapshot = new HashMap<>();
+    private void buildSnapshots(@NotNull Map<Long, SearchNode> nodes) {
+        Map<BlockPos, Double> costs = new HashMap<>();
+        Map<BlockPos, BlockPos> parents = new HashMap<>();
         for (SearchNode node : nodes.values()) {
             double g = node.gCost();
-            snapshot.put(node.pos(), g >= Double.MAX_VALUE / 2 ? 100000.0 : g);
+            costs.put(node.pos(), g >= Double.MAX_VALUE / 2 ? 100000.0 : g);
+            SearchNode parent = node.parent();
+            if (parent != null) {
+                parents.put(node.pos(), parent.pos());
+            }
         }
-        return Collections.unmodifiableMap(snapshot);
+        lastExploredCosts = Collections.unmodifiableMap(costs);
+        lastParentMap = Collections.unmodifiableMap(parents);
     }
 
     public @NotNull Map<BlockPos, Double> getLastExploredCosts() {
         return lastExploredCosts;
+    }
+
+    public @NotNull Map<BlockPos, BlockPos> getLastParentMap() {
+        return lastParentMap;
     }
 
     private @NotNull SearchNode getOrCreate(@NotNull Map<Long, SearchNode> nodes,

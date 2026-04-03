@@ -2,7 +2,7 @@ package fr.riege.client.command;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import fr.riege.api.goal.BlockGoal;
+import fr.riege.api.goal.GoalXZ;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.PathResult;
 import fr.riege.client.MelonFinderClient;
@@ -55,7 +55,6 @@ public final class GotoCommand {
             (int) Math.floor(player.getY()),
             (int) Math.floor(player.getZ())
         );
-        BlockPos goal = new BlockPos(x, y, z);
 
         MelonFinderClient.displayStatus("Computing path to " + x + " " + y + " " + z + "...");
         player.displayClientMessage(Component.literal("[MelonFinder] Computing path to " + x + " " + y + " " + z + "..."), false);
@@ -63,8 +62,9 @@ public final class GotoCommand {
         Thread.ofVirtual().name("melonfinder-pathfinder").start(() -> {
             try {
                 PathfinderContext pathCtx = PathfinderContextFactory.create(player);
-                PathResult result = ENGINE.compute(from, new BlockGoal(goal), pathCtx);
+                PathResult result = ENGINE.compute(from, new GoalXZ(x, y, z), pathCtx);
                 MelonFinderClient.displayExploredCosts(ENGINE.getLastExploredCosts());
+                MelonFinderClient.displayExploredParents(ENGINE.getLastParentMap());
                 MelonFinderEvents.BUS.post(new PathCompleteEvent(result));
                 player.displayClientMessage(Component.literal("[MelonFinder] " + result.path().status()), false);
             } catch (Exception e) {

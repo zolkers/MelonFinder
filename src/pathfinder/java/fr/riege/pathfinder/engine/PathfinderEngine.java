@@ -25,6 +25,7 @@ public final class PathfinderEngine {
     private PathSession activeSession;
     private boolean computing;
     private volatile Map<BlockPos, Double> lastExploredCosts = Collections.emptyMap();
+    private volatile Map<BlockPos, BlockPos> lastParentMap = Collections.emptyMap();
 
     public @NotNull PathResult compute(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
@@ -57,6 +58,10 @@ public final class PathfinderEngine {
         return lastExploredCosts;
     }
 
+    public @NotNull Map<BlockPos, BlockPos> getLastParentMap() {
+        return lastParentMap;
+    }
+
     private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
@@ -64,6 +69,7 @@ public final class PathfinderEngine {
         AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs());
         List<BlockPos> raw = search.search(from, goal);
         lastExploredCosts = search.getLastExploredCosts();
+        lastParentMap = search.getLastParentMap();
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
             return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored());

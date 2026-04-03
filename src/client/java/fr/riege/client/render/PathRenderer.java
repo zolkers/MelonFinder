@@ -39,10 +39,9 @@ public final class PathRenderer {
     }
 
     private void onRenderWorld(@NotNull RenderWorldEvent event) {
+        meshRenderer.endFrame();
         Path path = currentPath;
         if (path == null || path.status() != PathStatus.FOUND || path.segments().isEmpty()) return;
-
-        meshRenderer.endFrame();
 
         MinecraftRenderHandle handle = new MinecraftRenderHandle(
             event.getProjection(), meshRenderer,

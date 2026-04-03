@@ -2,6 +2,7 @@ package fr.riege.client;
 
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.Path;
+import fr.riege.client.render.ExplorationRenderer;
 import fr.riege.client.command.GotoCommand;
 import fr.riege.client.event.EventBridge;
 import fr.riege.client.render.DebugOverlay;
@@ -25,6 +26,7 @@ public final class MelonFinderClient implements ClientModInitializer {
 
     private final MelonFinderMeshRenderer meshRenderer = new MelonFinderMeshRenderer();
     private final PathRenderer pathRenderer = new PathRenderer(meshRenderer);
+    private final ExplorationRenderer explorationRenderer = new ExplorationRenderer(meshRenderer);
     private final DebugOverlay debugOverlay = new DebugOverlay();
 
     @Override
@@ -34,6 +36,7 @@ public final class MelonFinderClient implements ClientModInitializer {
         GotoCommand.register();
         new EventBridge(MelonFinderEvents.BUS).register();
         pathRenderer.register(MelonFinderEvents.BUS);
+        explorationRenderer.register(MelonFinderEvents.BUS);
         debugOverlay.register(MelonFinderEvents.BUS);
 
         MelonFinderEvents.BUS.subscribe(PathCompleteEvent.class, this, event ->
@@ -57,5 +60,10 @@ public final class MelonFinderClient implements ClientModInitializer {
     public static void displayExploredCosts(@NotNull Map<BlockPos, Double> costs) {
         if (instance == null) return;
         instance.debugOverlay.setExploredCosts(costs);
+    }
+
+    public static void displayExploredParents(@NotNull Map<BlockPos, BlockPos> parents) {
+        if (instance == null) return;
+        instance.explorationRenderer.setParentMap(parents);
     }
 }
