@@ -9,4 +9,8 @@ public interface IWorldLayer {
     boolean isSolid(@NotNull BlockPos pos);
     @NotNull FluidType getFluidType(@NotNull BlockPos pos);
     int getLightLevel(@NotNull BlockPos pos);
+
+    default boolean isPassable(@NotNull BlockPos pos) {
+        return !isSolid(pos);
+    }
 }

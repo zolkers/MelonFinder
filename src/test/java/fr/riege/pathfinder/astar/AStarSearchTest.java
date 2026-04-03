@@ -99,7 +99,7 @@ class AStarSearchTest {
         ICollisionLayer collision = noCollision();
 
         OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
-        registry.register(MovementKeys.WALK, new WalkEvaluator(world, block, entity));
+        registry.register(MovementKeys.WALK, new WalkEvaluator(world, block));
         registry.register(MovementKeys.JUMP, new JumpEvaluator(world, block, entity, collision));
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));
 

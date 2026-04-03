@@ -60,7 +60,7 @@ class SprintEvaluatorTest {
     @Test
     void walkableSurface_isPossibleAndCheaperThanWalk() {
         SprintEvaluator sprintEval = new SprintEvaluator(walkableWorld(), normalBlock(), standardEntity());
-        WalkEvaluator walkEval = new WalkEvaluator(walkableWorld(), normalBlock(), standardEntity());
+        WalkEvaluator walkEval = new WalkEvaluator(walkableWorld(), normalBlock());
         MovementResult sprintResult = sprintEval.evaluate(FROM, TO);
         MovementResult walkResult = walkEval.evaluate(FROM, TO);
         assertTrue(sprintResult.isPossible());

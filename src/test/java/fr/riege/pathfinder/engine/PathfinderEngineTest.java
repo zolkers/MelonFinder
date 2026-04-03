@@ -96,7 +96,7 @@ class PathfinderEngineTest {
         ICollisionLayer collision = noCollision();
 
         OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
-        registry.register(MovementKeys.WALK, new WalkEvaluator(world, block, entity));
+        registry.register(MovementKeys.WALK, new WalkEvaluator(world, block));
 
         return new PathfinderContext(
             world, block, entity, collision,

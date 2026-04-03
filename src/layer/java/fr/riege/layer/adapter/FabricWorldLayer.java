@@ -19,18 +19,22 @@ public final class FabricWorldLayer implements IWorldLayer {
     }
 
     @Override
-    @SuppressWarnings({"java:S1874", "deprecation"})
     public boolean isWalkable(@NotNull BlockPos pos) {
-        net.minecraft.core.BlockPos mcPos = toMc(pos);
-        net.minecraft.core.BlockPos below = mcPos.below();
-        return level.getBlockState(mcPos).isAir() && level.getBlockState(below).isSolid();
+        return isPassable(pos)
+            && isPassable(pos.offset(0, 1, 0))
+            && isSolid(pos.offset(0, -1, 0));
     }
 
     @Override
-    @SuppressWarnings({"java:S1874", "deprecation"})
     public boolean isSolid(@NotNull BlockPos pos) {
         net.minecraft.core.BlockPos mcPos = toMc(pos);
-        return level.getBlockState(mcPos).isSolid();
+        return !level.getBlockState(mcPos).getCollisionShape(level, mcPos).isEmpty();
+    }
+
+    @Override
+    public boolean isPassable(@NotNull BlockPos pos) {
+        net.minecraft.core.BlockPos mcPos = toMc(pos);
+        return level.getBlockState(mcPos).getCollisionShape(level, mcPos).isEmpty();
     }
 
     @Override

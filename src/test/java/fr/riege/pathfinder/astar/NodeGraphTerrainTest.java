@@ -75,7 +75,7 @@ class NodeGraphTerrainTest {
         ICollisionLayer c = noCollision();
 
         OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
-        registry.register(MovementKeys.WALK, new WalkEvaluator(w, b, e));
+        registry.register(MovementKeys.WALK, new WalkEvaluator(w, b));
         registry.register(MovementKeys.JUMP, new JumpEvaluator(w, b, e, c));
         registry.register(MovementKeys.FALL, new FallEvaluator(w, e));
         return new NodeGraph(registry);

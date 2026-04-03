@@ -15,7 +15,7 @@ public final class SprintEvaluator implements IMovementEvaluator {
             @NotNull IWorldLayer worldLayer,
             @NotNull IBlockPhysicsLayer blockPhysicsLayer,
             @NotNull IEntityPhysicsLayer entityPhysicsLayer) {
-        this.walkEvaluator = new WalkEvaluator(worldLayer, blockPhysicsLayer, entityPhysicsLayer);
+        this.walkEvaluator = new WalkEvaluator(worldLayer, blockPhysicsLayer);
         this.entityPhysicsLayer = entityPhysicsLayer;
     }
 

@@ -49,7 +49,7 @@ public final class PathfinderContextFactory {
             @NotNull FabricEntityPhysicsLayer entityPhysics,
             @NotNull FabricCollisionLayer collision) {
         OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
-        registry.register(MovementKeys.WALK,    new WalkEvaluator(world, blockPhysics, entityPhysics));
+        registry.register(MovementKeys.WALK,    new WalkEvaluator(world, blockPhysics));
         registry.register(MovementKeys.JUMP,    new JumpEvaluator(world, blockPhysics, entityPhysics, collision));
         registry.register(MovementKeys.FALL,    new FallEvaluator(world, entityPhysics));
         registry.register(MovementKeys.SWIM,    new SwimEvaluator(world, blockPhysics, entityPhysics));

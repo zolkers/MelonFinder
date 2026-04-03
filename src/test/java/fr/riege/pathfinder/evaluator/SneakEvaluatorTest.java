@@ -60,7 +60,7 @@ class SneakEvaluatorTest {
     @Test
     void walkableSurface_isPossibleAndMoreExpensiveThanWalk() {
         SneakEvaluator sneakEval = new SneakEvaluator(walkableWorld(), normalBlock(), standardEntity());
-        WalkEvaluator walkEval = new WalkEvaluator(walkableWorld(), normalBlock(), standardEntity());
+        WalkEvaluator walkEval = new WalkEvaluator(walkableWorld(), normalBlock());
         MovementResult sneakResult = sneakEval.evaluate(FROM, TO);
         MovementResult walkResult = walkEval.evaluate(FROM, TO);
         assertTrue(sneakResult.isPossible());
