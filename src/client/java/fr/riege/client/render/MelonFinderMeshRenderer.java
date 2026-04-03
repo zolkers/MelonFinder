@@ -19,12 +19,18 @@ import java.util.OptionalInt;
 
 public final class MelonFinderMeshRenderer implements AutoCloseable {
 
-    private final DynamicUniformStorage<MelonFinderMeshUniforms> uniformStorage =
-        new DynamicUniformStorage<>("melonfinder:mesh_data", MelonFinderMeshUniforms.BLOCK_SIZE, 256);
+    private DynamicUniformStorage<MelonFinderMeshUniforms> uniformStorage;
     private final MelonFinderMeshUniforms uniforms = new MelonFinderMeshUniforms();
 
+    private DynamicUniformStorage<MelonFinderMeshUniforms> uniformStorage() {
+        if (uniformStorage == null) {
+            uniformStorage = new DynamicUniformStorage<>("melonfinder:mesh_data", MelonFinderMeshUniforms.BLOCK_SIZE, 256);
+        }
+        return uniformStorage;
+    }
+
     public void endFrame() {
-        uniformStorage.endFrame();
+        if (uniformStorage != null) uniformStorage.endFrame();
     }
 
     public void render(MeshData meshData, RenderPipeline pipeline, Matrix4f proj, Matrix4f modelView) {
@@ -38,7 +44,7 @@ public final class MelonFinderMeshRenderer implements AutoCloseable {
         uniforms.screenWidth  = window.getWidth();
         uniforms.screenHeight = window.getHeight();
 
-        GpuBufferSlice uniformSlice = uniformStorage.writeUniform(uniforms);
+        GpuBufferSlice uniformSlice = uniformStorage().writeUniform(uniforms);
         GpuBuffer vertexBuf = format.uploadImmediateVertexBuffer(meshData.vertexBuffer());
 
         GpuBuffer indexBuf;
@@ -72,6 +78,6 @@ public final class MelonFinderMeshRenderer implements AutoCloseable {
 
     @Override
     public void close() {
-        uniformStorage.close();
+        if (uniformStorage != null) uniformStorage.close();
     }
 }

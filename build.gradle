@@ -19,12 +19,15 @@ sourceSets {
         java.srcDirs = ['src/pathfinder/java']
         resources.srcDirs = ['src/pathfinder/resources']
         compileClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.api.output
     }
     main {
         java.srcDirs = ['src/layer/java']
         resources.srcDirs = ['src/layer/resources']
         compileClasspath += sourceSets.api.output
         compileClasspath += sourceSets.pathfinder.output
+        runtimeClasspath += sourceSets.api.output
+        runtimeClasspath += sourceSets.pathfinder.output
     }
     test {
         java.srcDirs = ['src/test/java']
@@ -38,34 +41,32 @@ sourceSets {
 loom {
     splitEnvironmentSourceSets()
     mods {
-        "melonfinder-api" {
-            sourceSet sourceSets.api
-        }
-        "melonfinder-pathfinder" {
-            sourceSet sourceSets.pathfinder
-        }
         melonfinder {
+            sourceSet sourceSets.api
+            sourceSet sourceSets.pathfinder
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
     }
 }
 
-// api and pathfinder fabric.mod.json must be on the JVM system classpath at launch so that
-// Fabric Loader's mod discovery (which runs before Knot processes classPathGroups) can find them.
+// api and pathfinder must be on the JVM system classpath so Fabric Loader discovers them
+// before Knot bootstraps (classPathGroups directory entries break client-JAR resource lookup).
 afterEvaluate {
-    def apiOut = sourceSets.api.output
+    def apiOut      = sourceSets.api.output
     def pathfinderOut = sourceSets.pathfinder.output
     def earlyClasspath = files(
             apiOut.classesDirs, apiOut.resourcesDir,
             pathfinderOut.classesDirs, pathfinderOut.resourcesDir
     )
     tasks.named('runClient').configure {
-        dependsOn 'compileApiJava', 'processApiResources', 'compilePathfinderJava', 'processPathfinderResources'
+        dependsOn 'compileApiJava', 'processApiResources',
+                  'compilePathfinderJava', 'processPathfinderResources'
         classpath += earlyClasspath
     }
     tasks.named('runServer').configure {
-        dependsOn 'compileApiJava', 'processApiResources', 'compilePathfinderJava', 'processPathfinderResources'
+        dependsOn 'compileApiJava', 'processApiResources',
+                  'compilePathfinderJava', 'processPathfinderResources'
         classpath += earlyClasspath
     }
 }
@@ -73,14 +74,19 @@ afterEvaluate {
 // client source set is created by splitEnvironmentSourceSets(); configure it after loom
 sourceSets.client {
     java.srcDirs = ['src/client/java']
+    resources.srcDirs = ['src/client/resources']
     compileClasspath += sourceSets.main.output
     compileClasspath += sourceSets.api.output
     compileClasspath += sourceSets.pathfinder.output
+    runtimeClasspath += sourceSets.main.output
+    runtimeClasspath += sourceSets.api.output
+    runtimeClasspath += sourceSets.pathfinder.output
 }
 
 configurations {
     apiImplementation.extendsFrom implementation
     pathfinderImplementation.extendsFrom implementation
+    clientImplementation.extendsFrom implementation
 }
 
 dependencies {
