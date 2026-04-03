@@ -13,9 +13,10 @@ import java.util.List;
 
 public final class PathRenderer {
 
-    private static final float NODE_BOX_SIZE  = 0.25f;
-    private static final float LINE_WIDTH      = 1.5f;
-    private static final float PATH_LINE_WIDTH = 2.0f;
+    private static final float  NODE_BOX_SIZE  = 0.25f;
+    private static final float  LINE_WIDTH      = 1.5f;
+    private static final float  PATH_LINE_WIDTH = 2.0f;
+    private static final double RENDER_Y_OFFSET = 0.9; // waist height above feet
 
     private static final float[] COLOR_START = {0.0f, 1.0f, 1.0f, 0.9f}; // cyan
     private static final float[] COLOR_END   = {1.0f, 0.0f, 1.0f, 0.9f}; // magenta
@@ -58,10 +59,10 @@ public final class PathRenderer {
         for (int i = 0; i <= last; i++) {
             Vec3 pos   = segments.get(i).start();
             float[] color = (i == 0) ? COLOR_START : COLOR_NODE;
-            drawBox(handle, pos.x() - handle.cameraX(), pos.y() - handle.cameraY(), pos.z() - handle.cameraZ(), color);
+            drawBox(handle, pos.x() - handle.cameraX(), pos.y() + RENDER_Y_OFFSET - handle.cameraY(), pos.z() - handle.cameraZ(), color);
         }
         Vec3 end = segments.getLast().end();
-        drawBox(handle, end.x() - handle.cameraX(), end.y() - handle.cameraY(), end.z() - handle.cameraZ(), COLOR_END);
+        drawBox(handle, end.x() - handle.cameraX(), end.y() + 0.9 - handle.cameraY(), end.z() - handle.cameraZ(), COLOR_END);
     }
 
     private void renderPathLine(@NotNull List<Segment> segments, @NotNull RenderHandle handle) {
@@ -70,10 +71,10 @@ public final class PathRenderer {
             Vec3 a = seg.start();
             Vec3 b = seg.end();
             double ax = a.x() - handle.cameraX();
-            double ay = a.y() - handle.cameraY();
+            double ay = a.y() + RENDER_Y_OFFSET - handle.cameraY();
             double az = a.z() - handle.cameraZ();
             double bx = b.x() - handle.cameraX();
-            double by = b.y() - handle.cameraY();
+            double by = b.y() + RENDER_Y_OFFSET - handle.cameraY();
             double bz = b.z() - handle.cameraZ();
             handle.emitLine(ax, ay, az, bx, by, bz, PATH_LINE_WIDTH);
         }
