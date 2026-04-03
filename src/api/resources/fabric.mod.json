@@ -1,7 +1,0 @@
-{
-	"schemaVersion": 1,
-	"id": "melonfinder-api",
-	"version": "1.0.0",
-	"name": "MelonFinder API",
-	"environment": "*"
-}
