@@ -10,8 +10,8 @@ import java.util.Random;
 
 public final class SubBlockSampler {
 
-    private static final double MAX_VARIANCE = 0.1;
-    private static final double DIRECTION_BIAS = 0.1;
+    private static final double MAX_VARIANCE = 0.3;
+    private static final double DIRECTION_BIAS = 0.2;
     private static final double ENTITY_HEIGHT = 1.8;
 
     private final ICollisionLayer collisionLayer;

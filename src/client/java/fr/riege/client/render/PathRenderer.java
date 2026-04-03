@@ -1,17 +1,14 @@
 package fr.riege.client.render;
 
 import fr.riege.api.event.IEventBus;
-import fr.riege.api.path.Node;
+import fr.riege.api.math.Vec3;
 import fr.riege.api.path.Path;
 import fr.riege.api.path.PathStatus;
 import fr.riege.api.path.Segment;
-import fr.riege.api.registry.MovementKeys;
-import fr.riege.api.registry.RegistryKey;
 import fr.riege.client.event.events.RenderWorldEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class PathRenderer {
@@ -20,10 +17,6 @@ public final class PathRenderer {
     private static final float LINE_WIDTH      = 1.5f;
     private static final float PATH_LINE_WIDTH = 2.0f;
 
-    private static final float[] COLOR_WALK  = {0.0f, 1.0f, 0.0f, 0.7f};
-    private static final float[] COLOR_JUMP  = {1.0f, 0.8f, 0.0f, 0.7f};
-    private static final float[] COLOR_FALL  = {1.0f, 0.2f, 0.2f, 0.7f};
-    private static final float[] COLOR_OTHER = {0.5f, 0.5f, 1.0f, 0.7f};
     private static final float[] COLOR_START = {0.0f, 1.0f, 1.0f, 0.9f}; // cyan
     private static final float[] COLOR_END   = {1.0f, 0.0f, 1.0f, 0.9f}; // magenta
     private static final float[] COLOR_PATH  = {1.0f, 1.0f, 1.0f, 0.6f}; // white
@@ -55,66 +48,35 @@ public final class PathRenderer {
             event.getCameraX(), event.getCameraY(), event.getCameraZ()
         );
 
-        List<Node> allNodes = collectNodes(path);
-        if (allNodes.isEmpty()) return;
-
-        renderNodes(allNodes, handle);
-        renderPathLine(allNodes, handle);
+        renderStartEnd(path, handle);
+        renderPathLine(path.segments(), handle);
     }
 
-    private @NotNull List<Node> collectNodes(@NotNull Path path) {
-        List<Node> result = new ArrayList<>();
-        for (Segment segment : path.segments()) {
-            result.addAll(segment.nodes());
-        }
-        return result;
+    private void renderStartEnd(@NotNull Path path, @NotNull RenderHandle handle) {
+        Vec3 start = path.segments().getFirst().start();
+        Vec3 end   = path.segments().getLast().end();
+        drawBox(handle, start.x() - handle.cameraX(), start.y() - handle.cameraY(), start.z() - handle.cameraZ(), COLOR_START);
+        drawBox(handle, end.x()   - handle.cameraX(), end.y()   - handle.cameraY(), end.z()   - handle.cameraZ(), COLOR_END);
     }
 
-    private void renderNodes(@NotNull List<Node> nodes, @NotNull RenderHandle handle) {
-        int last = nodes.size() - 1;
-        for (int i = 0; i <= last; i++) {
-            Node node = nodes.get(i);
-            float[] color = resolveNodeColor(node, i == 0, i == last);
-            double cx = node.pos().x() + 0.5 - handle.cameraX();
-            double cy = node.pos().y() + 0.5 - handle.cameraY();
-            double cz = node.pos().z() + 0.5 - handle.cameraZ();
-            drawBox(handle, cx, cy, cz, color);
-        }
-    }
-
-    private float @NotNull[] resolveNodeColor(@NotNull Node node, boolean isStart, boolean isEnd) {
-        if (isStart) return COLOR_START;
-        if (isEnd) return COLOR_END;
-        return resolveColor(node);
-    }
-
-    private void renderPathLine(@NotNull List<Node> nodes, @NotNull RenderHandle handle) {
-        if (nodes.size() < 2) return;
+    private void renderPathLine(@NotNull List<Segment> segments, @NotNull RenderHandle handle) {
         handle.beginLines(COLOR_PATH[0], COLOR_PATH[1], COLOR_PATH[2], COLOR_PATH[3]);
-        for (int i = 0; i < nodes.size() - 1; i++) {
-            Node a = nodes.get(i);
-            Node b = nodes.get(i + 1);
-            double ax = a.pos().x() + 0.5 - handle.cameraX();
-            double ay = a.pos().y() + 0.5 - handle.cameraY();
-            double az = a.pos().z() + 0.5 - handle.cameraZ();
-            double bx = b.pos().x() + 0.5 - handle.cameraX();
-            double by = b.pos().y() + 0.5 - handle.cameraY();
-            double bz = b.pos().z() + 0.5 - handle.cameraZ();
+        for (Segment seg : segments) {
+            Vec3 a = seg.start();
+            Vec3 b = seg.end();
+            double ax = a.x() - handle.cameraX();
+            double ay = a.y() - handle.cameraY();
+            double az = a.z() - handle.cameraZ();
+            double bx = b.x() - handle.cameraX();
+            double by = b.y() - handle.cameraY();
+            double bz = b.z() - handle.cameraZ();
             handle.emitLine(ax, ay, az, bx, by, bz, PATH_LINE_WIDTH);
         }
         handle.end(false);
     }
 
-    private float @NotNull[] resolveColor(@NotNull Node node) {
-        RegistryKey key = node.movementType().key();
-        if (MovementKeys.JUMP.equals(key)) return COLOR_JUMP;
-        if (MovementKeys.FALL.equals(key)) return COLOR_FALL;
-        if (MovementKeys.WALK.equals(key)) return COLOR_WALK;
-        return COLOR_OTHER;
-    }
-
     private void drawBox(@NotNull RenderHandle handle, double cx, double cy, double cz, float @NotNull[] color) {
-        float half = PathRenderer.NODE_BOX_SIZE / 2.0f;
+        float half = NODE_BOX_SIZE / 2.0f;
         double x1 = cx - half;
         double y1 = cy - half;
         double z1 = cz - half;
