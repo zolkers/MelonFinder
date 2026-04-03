@@ -25,7 +25,7 @@ public final class DebugOverlay {
     private static final int COLOR_ERROR   = 0xFFFF4444;
     private static final int COLOR_COST    = 0xFFFFFF00;
     private static final String PATH_TAG = "Path: ";
-    private static final double MAX_COST_DIST_SQ = 48.0 * 48.0;
+    private static final double MAX_COST_DIST_SQ = 10.0 * 10.0;
 
     @Nullable
     private Path currentPath;
