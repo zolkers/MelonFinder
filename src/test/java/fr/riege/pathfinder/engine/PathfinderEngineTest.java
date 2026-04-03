@@ -101,7 +101,7 @@ class PathfinderEngineTest {
         return new PathfinderContext(
             world, block, entity, collision,
             registry, new Euclidean3DHeuristic(),
-            10000, 16, 42L
+            5_000L, 16, 42L
         );
     }
 

@@ -55,11 +55,11 @@ public final class PathfinderEngine {
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
         NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry());
-        AStarSearch search = new AStarSearch(graph, ctx.maxNodes());
+        AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs());
         List<BlockPos> raw = search.search(from, goal);
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
-            return new PathResult(empty, System.currentTimeMillis() - startMs, 0);
+            return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored());
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;

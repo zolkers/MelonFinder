@@ -1,8 +1,6 @@
 package fr.riege.pathfinder.astar;
 
 import fr.riege.api.math.BlockPos;
-import fr.riege.api.path.MovementType;
-import fr.riege.api.path.Node;
 import fr.riege.api.registry.IRegistry;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.api.registry.RegistryKey;
@@ -26,39 +24,29 @@ public final class NodeGraph {
         this.evaluatorRegistry = evaluatorRegistry;
     }
 
-    public @NotNull List<Node> getNeighbors(@NotNull Node current) {
-        List<Node> neighbors = new ArrayList<>();
-        BlockPos pos = current.pos();
-        double parentGCost = current.gCost();
-
-        addHorizontalNeighbors(pos, parentGCost, neighbors);
-        addFallNeighbors(pos, parentGCost, neighbors);
-
+    public @NotNull List<NeighborMove> getNeighbors(@NotNull BlockPos pos) {
+        List<NeighborMove> neighbors = new ArrayList<>();
+        addHorizontalNeighbors(pos, neighbors);
+        addFallNeighbors(pos, neighbors);
         return neighbors;
     }
 
-    private void addHorizontalNeighbors(@NotNull BlockPos pos, double parentGCost,
-            @NotNull List<Node> neighbors) {
+    private void addHorizontalNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
         Optional<IMovementEvaluator> walkOpt = evaluatorRegistry.get(MovementKeys.WALK);
         Optional<IMovementEvaluator> jumpOpt = evaluatorRegistry.get(MovementKeys.JUMP);
 
         for (int i = 0; i < DX.length; i++) {
             int dx = DX[i];
             int dz = DZ[i];
-
-            walkOpt.ifPresent(walkEval -> {
-                tryMove(pos, dx, 0, dz, walkEval, MovementKeys.WALK, parentGCost, neighbors);
-                tryMove(pos, dx, -1, dz, walkEval, MovementKeys.WALK, parentGCost, neighbors);
+            walkOpt.ifPresent(eval -> {
+                tryMove(pos, dx, 0, dz, eval, MovementKeys.WALK, neighbors);
+                tryMove(pos, dx, -1, dz, eval, MovementKeys.WALK, neighbors);
             });
-
-            jumpOpt.ifPresent(jumpEval ->
-                tryMove(pos, dx, 1, dz, jumpEval, MovementKeys.JUMP, parentGCost, neighbors)
-            );
+            jumpOpt.ifPresent(eval -> tryMove(pos, dx, 1, dz, eval, MovementKeys.JUMP, neighbors));
         }
     }
 
-    private void addFallNeighbors(@NotNull BlockPos pos, double parentGCost,
-            @NotNull List<Node> neighbors) {
+    private void addFallNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
         Optional<IMovementEvaluator> fallOpt = evaluatorRegistry.get(MovementKeys.FALL);
         if (fallOpt.isEmpty()) return;
 
@@ -67,10 +55,10 @@ public final class NodeGraph {
             int dx = DX[i];
             int dz = DZ[i];
             for (int dy = 2; dy <= MAX_FALL_DEPTH + 1; dy++) {
-                MovementResult result = fallEval.evaluate(pos, pos.offset(dx, -dy, dz));
+                BlockPos to = pos.offset(dx, -dy, dz);
+                MovementResult result = fallEval.evaluate(pos, to);
                 if (!result.isPossible()) continue;
-                MovementType type = new MovementType(MovementKeys.FALL);
-                neighbors.add(new Node(pos.offset(dx, -dy, dz), type, parentGCost + result.getCost(), 0));
+                neighbors.add(new NeighborMove(to, MovementKeys.FALL, result.getCost()));
                 break;
             }
         }
@@ -78,10 +66,11 @@ public final class NodeGraph {
 
     private void tryMove(@NotNull BlockPos pos, int dx, int dy, int dz,
             @NotNull IMovementEvaluator evaluator, @NotNull RegistryKey key,
-            double parentGCost, @NotNull List<Node> neighbors) {
+            @NotNull List<NeighborMove> neighbors) {
         BlockPos to = pos.offset(dx, dy, dz);
         MovementResult result = evaluator.evaluate(pos, to);
-        if (!result.isPossible()) return;
-        neighbors.add(new Node(to, new MovementType(key), parentGCost + result.getCost(), 0));
+        if (result.isPossible()) {
+            neighbors.add(new NeighborMove(to, key, result.getCost()));
+        }
     }
 }

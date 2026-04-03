@@ -104,7 +104,7 @@ class AStarSearchTest {
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));
 
         NodeGraph graph = new NodeGraph(registry);
-        return new AStarSearch(graph, 10000);
+        return new AStarSearch(graph, 5_000L);
     }
 
     @Test

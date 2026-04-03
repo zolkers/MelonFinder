@@ -16,8 +16,10 @@ public final class MovementResult {
         return new MovementResult(true, cost);
     }
 
+    private static final MovementResult IMPOSSIBLE = new MovementResult(false, Double.MAX_VALUE);
+
     public static @NotNull MovementResult impossible() {
-        return new MovementResult(false, Double.MAX_VALUE);
+        return IMPOSSIBLE;
     }
 
     public boolean isPossible() { return possible; }

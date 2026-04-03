@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class PathfinderContextFactory {
 
-    private static final int DEFAULT_MAX_NODES = 100_000;
+    private static final long DEFAULT_MAX_COMPUTE_MS = 5_000L;
     private static final int DEFAULT_MAX_SEGMENT_LENGTH = 12;
     private static final long DEFAULT_RANDOM_SEED = 42L;
 
@@ -40,7 +40,7 @@ public final class PathfinderContextFactory {
         return new PathfinderContext(
             world, blockPhysics, entityPhysics, collision,
             registry, new Euclidean3DHeuristic(),
-            DEFAULT_MAX_NODES, DEFAULT_MAX_SEGMENT_LENGTH, DEFAULT_RANDOM_SEED);
+            DEFAULT_MAX_COMPUTE_MS, DEFAULT_MAX_SEGMENT_LENGTH, DEFAULT_RANDOM_SEED);
     }
 
     private static @NotNull IRegistry<IMovementEvaluator> buildRegistry(

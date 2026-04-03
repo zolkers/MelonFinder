@@ -27,6 +27,10 @@ public record BlockPos(int x, int y, int z) {
         return x == x1 && y == y1 && z == z1;
     }
 
+    public long asLong() {
+        return ((long) x & 0x3FFFFFFL) << 38 | ((long) y & 0xFFFL) << 26 | ((long) z & 0x3FFFFFFL);
+    }
+
     @Override
     public @NotNull String toString() {
         return "BlockPos{x=" + x + ", y=" + y + ", z=" + z + "}";

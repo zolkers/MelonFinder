@@ -9,8 +9,6 @@ import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
 import fr.riege.api.math.FluidType;
-import fr.riege.api.path.Node;
-import fr.riege.api.path.MovementType;
 import fr.riege.api.path.PathStatus;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.pathfinder.evaluator.FallEvaluator;
@@ -84,11 +82,7 @@ class NodeGraphTerrainTest {
     }
 
     private AStarSearch buildSearch(Set<BlockPos> walkable, Set<BlockPos> solid) {
-        return new AStarSearch(buildGraph(walkable, solid), 10_000);
-    }
-
-    private Node startNode(BlockPos pos) {
-        return new Node(pos, new MovementType(MovementKeys.WALK), 0.0, 0.0);
+        return new AStarSearch(buildGraph(walkable, solid), 5_000L);
     }
 
     @Test
@@ -103,10 +97,9 @@ class NodeGraphTerrainTest {
         );
 
         NodeGraph graph = buildGraph(walkable, solid);
-        List<Node> neighbors = graph.getNeighbors(startNode(from));
+        List<NeighborMove> neighbors = graph.getNeighbors(from);
 
-        boolean foundStepUp = neighbors.stream()
-            .anyMatch(n -> n.pos().equals(stepUp));
+        boolean foundStepUp = neighbors.stream().anyMatch(m -> m.to().equals(stepUp));
         assertTrue(foundStepUp, "Step-up neighbor must be generated");
     }
 
@@ -121,10 +114,9 @@ class NodeGraphTerrainTest {
         );
 
         NodeGraph graph = buildGraph(walkable, solid);
-        List<Node> neighbors = graph.getNeighbors(startNode(from));
+        List<NeighborMove> neighbors = graph.getNeighbors(from);
 
-        boolean foundStepDown = neighbors.stream()
-            .anyMatch(n -> n.pos().equals(stepDown));
+        boolean foundStepDown = neighbors.stream().anyMatch(m -> m.to().equals(stepDown));
         assertTrue(foundStepDown, "Step-down neighbor must be generated");
     }
 
@@ -139,10 +131,9 @@ class NodeGraphTerrainTest {
         );
 
         NodeGraph graph = buildGraph(walkable, solid);
-        List<Node> neighbors = graph.getNeighbors(startNode(from));
+        List<NeighborMove> neighbors = graph.getNeighbors(from);
 
-        boolean foundFall = neighbors.stream()
-            .anyMatch(n -> n.pos().equals(landing));
+        boolean foundFall = neighbors.stream().anyMatch(m -> m.to().equals(landing));
         assertTrue(foundFall, "Fall neighbor must be generated");
     }
 
@@ -158,10 +149,9 @@ class NodeGraphTerrainTest {
         );
 
         NodeGraph graph = buildGraph(walkable, solid);
-        List<Node> neighbors = graph.getNeighbors(startNode(from));
+        List<NeighborMove> neighbors = graph.getNeighbors(from);
 
-        boolean foundFall = neighbors.stream()
-            .anyMatch(n -> n.pos().equals(landing));
+        boolean foundFall = neighbors.stream().anyMatch(m -> m.to().equals(landing));
         assertFalse(foundFall, "Fall through a solid block must not be generated");
     }
 
