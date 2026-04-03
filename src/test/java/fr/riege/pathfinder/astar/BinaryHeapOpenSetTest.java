@@ -9,8 +9,8 @@ class BinaryHeapOpenSetTest {
 
     private SearchNode node(int x, double g, double h) {
         SearchNode n = new SearchNode(new BlockPos(x, 64, 0));
-        n.gCost = g;
-        n.hCost = h;
+        n.setGCost(g);
+        n.setHCost(h);
         return n;
     }
 
@@ -23,7 +23,7 @@ class BinaryHeapOpenSetTest {
 
         SearchNode min = set.removeMin();
         assertNotNull(min);
-        assertEquals(1, min.pos.x());
+        assertEquals(1, min.pos().x());
     }
 
     @Test
@@ -43,13 +43,13 @@ class BinaryHeapOpenSetTest {
         set.insert(low);
 
         // Drop high's cost so it should now be minimum
-        high.gCost = 0;
-        high.hCost = 0;
+        high.setGCost(0);
+        high.setHCost(0);
         set.update(high);
 
         SearchNode min = set.removeMin();
         assertNotNull(min);
-        assertEquals(0, min.pos.x());
+        assertEquals(0, min.pos().x());
     }
 
     @Test
@@ -61,6 +61,6 @@ class BinaryHeapOpenSetTest {
         assertFalse(set.isEmpty());
         SearchNode min = set.removeMin();
         assertNotNull(min);
-        assertEquals(0, min.pos.x());
+        assertEquals(0, min.pos().x());
     }
 }

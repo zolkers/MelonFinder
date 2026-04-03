@@ -6,11 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 final class SearchNode {
 
-    final @NotNull BlockPos pos;
-    @Nullable SearchNode parent;
-    double gCost;
-    double hCost;
-    int heapPosition; // 0 = unseen, >0 = in heap, -1 = closed
+    private final @NotNull BlockPos pos;
+    private @Nullable SearchNode parent;
+    private double gCost;
+    private double hCost;
+    private int heapPosition; // 0 = unseen, >0 = in heap, -1 = closed
 
     SearchNode(@NotNull BlockPos pos) {
         this.pos = pos;
@@ -18,15 +18,18 @@ final class SearchNode {
         this.heapPosition = 0;
     }
 
-    double fCost() {
-        return gCost + hCost;
-    }
+    @NotNull BlockPos pos() { return pos; }
+    @Nullable SearchNode parent() { return parent; }
+    double gCost() { return gCost; }
+    int heapPosition() { return heapPosition; }
 
-    boolean isClosed() {
-        return heapPosition == -1;
-    }
+    void setParent(@Nullable SearchNode parent) { this.parent = parent; }
+    void setGCost(double gCost) { this.gCost = gCost; }
+    void setHCost(double hCost) { this.hCost = hCost; }
+    void setHeapPosition(int heapPosition) { this.heapPosition = heapPosition; }
+    void markClosed() { this.heapPosition = -1; }
 
-    boolean isOpen() {
-        return heapPosition > 0;
-    }
+    double fCost() { return gCost + hCost; }
+    boolean isClosed() { return heapPosition == -1; }
+    boolean isOpen() { return heapPosition > 0; }
 }

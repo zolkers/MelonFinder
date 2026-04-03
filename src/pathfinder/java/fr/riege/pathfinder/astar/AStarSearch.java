@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class AStarSearch {
 
@@ -30,14 +31,14 @@ public final class AStarSearch {
             return List.of(start);
         }
 
-        HashMap<Long, SearchNode> nodes = new HashMap<>();
+        Map<Long, SearchNode> nodes = new HashMap<>();
         BinaryHeapOpenSet openSet = new BinaryHeapOpenSet();
         long deadline = System.currentTimeMillis() + maxComputeMs;
         int iterations = 0;
 
         SearchNode startNode = getOrCreate(nodes, start);
-        startNode.gCost = 0;
-        startNode.hCost = goal.heuristicCost(start);
+        startNode.setGCost(0);
+        startNode.setHCost(goal.heuristicCost(start));
         openSet.insert(startNode);
 
         while (!openSet.isEmpty()) {
@@ -49,30 +50,24 @@ public final class AStarSearch {
             iterations++;
 
             SearchNode current = openSet.removeMin();
-            current.heapPosition = -1;
+            current.markClosed();
 
-            if (goal.isReached(current.pos)) {
+            if (goal.isReached(current.pos())) {
                 lastStatus = PathStatus.FOUND;
                 nodesExplored = iterations;
                 return reconstructPath(current);
             }
 
-            for (NeighborMove move : graph.getNeighbors(current.pos)) {
+            for (NeighborMove move : graph.getNeighbors(current.pos())) {
                 SearchNode neighbor = getOrCreate(nodes, move.to());
-                if (neighbor.isClosed()) continue;
+                double tentativeG = current.gCost() + move.edgeCost();
+                if (neighbor.isClosed() || tentativeG >= neighbor.gCost()) continue;
 
-                double tentativeG = current.gCost + move.edgeCost();
-                if (tentativeG >= neighbor.gCost) continue;
+                neighbor.setGCost(tentativeG);
+                neighbor.setHCost(goal.heuristicCost(move.to()));
+                neighbor.setParent(current);
 
-                neighbor.gCost = tentativeG;
-                neighbor.hCost = goal.heuristicCost(move.to());
-                neighbor.parent = current;
-
-                if (neighbor.isOpen()) {
-                    openSet.update(neighbor);
-                } else {
-                    openSet.insert(neighbor);
-                }
+                openSet.upsert(neighbor);
             }
         }
 
@@ -81,23 +76,17 @@ public final class AStarSearch {
         return Collections.emptyList();
     }
 
-    private @NotNull SearchNode getOrCreate(@NotNull HashMap<Long, SearchNode> nodes,
+    private @NotNull SearchNode getOrCreate(@NotNull Map<Long, SearchNode> nodes,
             @NotNull BlockPos pos) {
-        long key = pos.asLong();
-        SearchNode node = nodes.get(key);
-        if (node == null) {
-            node = new SearchNode(pos);
-            nodes.put(key, node);
-        }
-        return node;
+        return nodes.computeIfAbsent(pos.asLong(), k -> new SearchNode(pos));
     }
 
     private @NotNull List<BlockPos> reconstructPath(@NotNull SearchNode goal) {
         List<BlockPos> path = new ArrayList<>();
         SearchNode current = goal;
         while (current != null) {
-            path.add(current.pos);
-            current = current.parent;
+            path.add(current.pos());
+            current = current.parent();
         }
         Collections.reverse(path);
         return path;

@@ -1,5 +1,6 @@
 package fr.riege.pathfinder.astar;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -16,25 +17,33 @@ final class BinaryHeapOpenSet {
         this.size = 0;
     }
 
-    void insert(@Nullable SearchNode node) {
+    void insert(@NotNull SearchNode node) {
         size++;
         if (size >= heap.length) {
             heap = Arrays.copyOf(heap, heap.length * 2);
         }
         heap[size] = node;
-        node.heapPosition = size;
+        node.setHeapPosition(size);
         bubbleUp(size);
     }
 
-    void update(@Nullable SearchNode node) {
-        bubbleUp(node.heapPosition);
+    void update(@NotNull SearchNode node) {
+        bubbleUp(node.heapPosition());
+    }
+
+    void upsert(@NotNull SearchNode node) {
+        if (node.isOpen()) {
+            update(node);
+        } else {
+            insert(node);
+        }
     }
 
     @Nullable SearchNode removeMin() {
         if (size == 0) return null;
         SearchNode min = heap[1];
         heap[1] = heap[size];
-        heap[1].heapPosition = 1;
+        heap[1].setHeapPosition(1);
         heap[size] = null;
         size--;
         if (size > 0) sinkDown(1);
@@ -51,11 +60,11 @@ final class BinaryHeapOpenSet {
             int parent = index >>> 1;
             if (heap[parent].fCost() <= node.fCost()) break;
             heap[index] = heap[parent];
-            heap[index].heapPosition = index;
+            heap[index].setHeapPosition(index);
             index = parent;
         }
         heap[index] = node;
-        node.heapPosition = index;
+        node.setHeapPosition(index);
     }
 
     private void sinkDown(int index) {
@@ -67,10 +76,10 @@ final class BinaryHeapOpenSet {
             }
             if (node.fCost() <= heap[child].fCost()) break;
             heap[index] = heap[child];
-            heap[index].heapPosition = index;
+            heap[index].setHeapPosition(index);
             index = child;
         }
         heap[index] = node;
-        node.heapPosition = index;
+        node.setHeapPosition(index);
     }
 }
