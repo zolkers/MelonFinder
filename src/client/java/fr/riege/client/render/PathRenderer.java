@@ -20,6 +20,7 @@ public final class PathRenderer {
     private static final float[] COLOR_START = {0.0f, 1.0f, 1.0f, 0.9f}; // cyan
     private static final float[] COLOR_END   = {1.0f, 0.0f, 1.0f, 0.9f}; // magenta
     private static final float[] COLOR_PATH  = {1.0f, 1.0f, 1.0f, 0.6f}; // white
+    private static final float[] COLOR_NODE  = {0.0f, 1.0f, 0.0f, 0.7f}; // green
 
     private final MelonFinderMeshRenderer meshRenderer;
 
@@ -48,15 +49,19 @@ public final class PathRenderer {
             event.getCameraX(), event.getCameraY(), event.getCameraZ()
         );
 
-        renderStartEnd(path, handle);
+        renderNodes(path.segments(), handle);
         renderPathLine(path.segments(), handle);
     }
 
-    private void renderStartEnd(@NotNull Path path, @NotNull RenderHandle handle) {
-        Vec3 start = path.segments().getFirst().start();
-        Vec3 end   = path.segments().getLast().end();
-        drawBox(handle, start.x() - handle.cameraX(), start.y() - handle.cameraY(), start.z() - handle.cameraZ(), COLOR_START);
-        drawBox(handle, end.x()   - handle.cameraX(), end.y()   - handle.cameraY(), end.z()   - handle.cameraZ(), COLOR_END);
+    private void renderNodes(@NotNull List<Segment> segments, @NotNull RenderHandle handle) {
+        int last = segments.size() - 1;
+        for (int i = 0; i <= last; i++) {
+            Vec3 pos   = segments.get(i).start();
+            float[] color = (i == 0) ? COLOR_START : COLOR_NODE;
+            drawBox(handle, pos.x() - handle.cameraX(), pos.y() - handle.cameraY(), pos.z() - handle.cameraZ(), color);
+        }
+        Vec3 end = segments.getLast().end();
+        drawBox(handle, end.x() - handle.cameraX(), end.y() - handle.cameraY(), end.z() - handle.cameraZ(), COLOR_END);
     }
 
     private void renderPathLine(@NotNull List<Segment> segments, @NotNull RenderHandle handle) {
