@@ -2,6 +2,7 @@ package fr.riege.client;
 
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.Path;
+import fr.riege.api.path.PathDebugData;
 import fr.riege.client.render.ExplorationRenderer;
 import fr.riege.client.command.GotoCommand;
 import fr.riege.client.event.EventBridge;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 public final class MelonFinderClient implements ClientModInitializer {
 
@@ -65,5 +67,11 @@ public final class MelonFinderClient implements ClientModInitializer {
     public static void displayExploredParents(@NotNull Map<BlockPos, BlockPos> parents) {
         if (instance == null) return;
         instance.explorationRenderer.setParentMap(parents);
+    }
+
+    public static void displayDebugData(@NotNull Optional<PathDebugData> debugData) {
+        if (instance == null) return;
+        instance.pathRenderer.setDebugData(debugData.orElse(null));
+        instance.debugOverlay.setDebugData(debugData);
     }
 }

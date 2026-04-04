@@ -66,6 +66,7 @@ public final class GotoCommand {
                 MelonFinderClient.displayExploredCosts(ENGINE.getLastExploredCosts());
                 MelonFinderClient.displayExploredParents(ENGINE.getLastParentMap());
                 MelonFinderEvents.BUS.post(new PathCompleteEvent(result));
+                MelonFinderClient.displayDebugData(result.debugData());
                 player.displayClientMessage(Component.literal("[MelonFinder] " + result.path().status()), false);
             } catch (Exception e) {
                 LOGGER.error("Pathfinder error", e);

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import fr.riege.api.event.IEventBus;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.Path;
+import fr.riege.api.path.PathDebugData;
 import fr.riege.api.path.PathStatus;
 import fr.riege.client.event.events.RenderHudEvent;
 import fr.riege.client.event.events.RenderWorldEvent;
@@ -15,6 +16,7 @@ import org.joml.Vector4f;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 public final class DebugOverlay {
 
@@ -31,6 +33,8 @@ public final class DebugOverlay {
     private Path currentPath;
     @Nullable
     private volatile String statusOverride;
+    @Nullable
+    private volatile PathDebugData currentDebugData;
     private volatile Map<BlockPos, Double> exploredCosts = Collections.emptyMap();
 
     @Nullable
@@ -57,6 +61,10 @@ public final class DebugOverlay {
         this.exploredCosts = costs;
     }
 
+    public void setDebugData(@NotNull Optional<PathDebugData> debugData) {
+        this.currentDebugData = debugData.orElse(null);
+    }
+
     private void onRenderWorld(@NotNull RenderWorldEvent event) {
         lastMvp = new Matrix4f(event.getProjection()).mul(RenderSystem.getModelViewMatrix());
         lastCamX = event.getCameraX();
@@ -69,7 +77,18 @@ public final class DebugOverlay {
         if (line != null) {
             event.getGraphics().drawString(Minecraft.getInstance().font, line, TEXT_X, TEXT_Y, resolveColor(), false);
         }
+        String debugLine = buildDebugLine();
+        if (debugLine != null) {
+            event.getGraphics().drawString(Minecraft.getInstance().font, debugLine, TEXT_X, TEXT_Y + 10, COLOR_COST, false);
+        }
         renderExploredCosts(event);
+    }
+
+    @Nullable
+    private String buildDebugLine() {
+        PathDebugData data = currentDebugData;
+        if (data == null) return null;
+        return "Smooth: " + data.gradientPoints().size() + " ctrl | Catmull: " + data.catmullPoints().size() + " pts";
     }
 
     @Nullable
