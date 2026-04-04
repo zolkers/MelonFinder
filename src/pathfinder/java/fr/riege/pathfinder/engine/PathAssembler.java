@@ -10,6 +10,7 @@ import fr.riege.api.path.PathStatus;
 import fr.riege.api.path.Segment;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.pathfinder.smooth.CatmullRomSmoother;
+import fr.riege.pathfinder.smooth.CornerSoftener;
 import fr.riege.pathfinder.smooth.GradientDescentSmoother;
 import fr.riege.pathfinder.smooth.SubBlockSampler;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +34,9 @@ final class PathAssembler {
         }
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / HITBOX_HALF_DIVISOR;
         SubBlockSampler sampler = new SubBlockSampler(ctx.collisionLayer(), hitboxHalf, ctx.randomSeed());
-        List<Vec3> sampled  = samplePoints(waypoints, sampler);
-        List<Vec3> smoothed = new GradientDescentSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(sampled);
+        List<Vec3> sampled   = samplePoints(waypoints, sampler);
+        List<Vec3> softened  = new CornerSoftener().soften(sampled);
+        List<Vec3> smoothed  = new GradientDescentSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(softened);
         List<Vec3> dense    = new CatmullRomSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(smoothed);
         List<Segment> segments = buildSegments(dense);
         double totalCost = segments.stream().mapToDouble(Segment::length).sum();
