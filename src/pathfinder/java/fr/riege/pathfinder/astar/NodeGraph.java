@@ -1,6 +1,8 @@
 package fr.riege.pathfinder.astar;
 
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
+import fr.riege.api.math.FluidType;
 import fr.riege.api.registry.IRegistry;
 import fr.riege.api.registry.MovementKeys;
 import fr.riege.api.registry.RegistryKey;
@@ -19,15 +21,21 @@ public final class NodeGraph {
     private static final int MAX_FALL_DEPTH = 3;
 
     private final IRegistry<IMovementEvaluator> evaluatorRegistry;
+    private final IWorldLayer worldLayer;
 
-    public NodeGraph(@NotNull IRegistry<IMovementEvaluator> evaluatorRegistry) {
+    public NodeGraph(@NotNull IRegistry<IMovementEvaluator> evaluatorRegistry,
+                     @NotNull IWorldLayer worldLayer) {
         this.evaluatorRegistry = evaluatorRegistry;
+        this.worldLayer = worldLayer;
     }
 
     public @NotNull List<NeighborMove> getNeighbors(@NotNull BlockPos pos) {
         List<NeighborMove> neighbors = new ArrayList<>();
         addHorizontalNeighbors(pos, neighbors);
         addFallNeighbors(pos, neighbors);
+        if (worldLayer.getFluidType(pos) != FluidType.NONE) {
+            addSwimNeighbors(pos, neighbors);
+        }
         return neighbors;
     }
 
@@ -62,6 +70,18 @@ public final class NodeGraph {
                 break;
             }
         }
+    }
+
+    private void addSwimNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
+        Optional<IMovementEvaluator> swimOpt = evaluatorRegistry.get(MovementKeys.SWIM);
+        if (swimOpt.isEmpty()) return;
+
+        IMovementEvaluator swimEval = swimOpt.get();
+        for (int i = 0; i < DX.length; i++) {
+            tryMove(pos, DX[i], 0, DZ[i], swimEval, MovementKeys.SWIM, neighbors);
+        }
+        tryMove(pos, 0, 1, 0, swimEval, MovementKeys.SWIM, neighbors);
+        tryMove(pos, 0, -1, 0, swimEval, MovementKeys.SWIM, neighbors);
     }
 
     private void tryMove(@NotNull BlockPos pos, int dx, int dy, int dz,

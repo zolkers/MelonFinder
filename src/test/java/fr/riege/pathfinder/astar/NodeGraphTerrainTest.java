@@ -78,7 +78,7 @@ class NodeGraphTerrainTest {
         registry.register(MovementKeys.WALK, new WalkEvaluator(w, b));
         registry.register(MovementKeys.JUMP, new JumpEvaluator(w, b, e, c));
         registry.register(MovementKeys.FALL, new FallEvaluator(w, e));
-        return new NodeGraph(registry);
+        return new NodeGraph(registry, w);
     }
 
     private AStarSearch buildSearch(Set<BlockPos> walkable, Set<BlockPos> solid) {

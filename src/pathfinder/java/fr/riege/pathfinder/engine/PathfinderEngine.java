@@ -65,7 +65,7 @@ public final class PathfinderEngine {
     private @NotNull PathResult runPipeline(@NotNull BlockPos from, @NotNull IGoal goal,
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
-        NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry());
+        NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry(), ctx.worldLayer());
         AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs());
         List<BlockPos> raw = search.search(from, goal);
         lastExploredCosts = search.getLastExploredCosts();

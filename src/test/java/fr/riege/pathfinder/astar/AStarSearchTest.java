@@ -103,7 +103,7 @@ class AStarSearchTest {
         registry.register(MovementKeys.JUMP, new JumpEvaluator(world, block, entity, collision));
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));
 
-        NodeGraph graph = new NodeGraph(registry);
+        NodeGraph graph = new NodeGraph(registry, world);
         return new AStarSearch(graph, 5_000L);
     }
 
