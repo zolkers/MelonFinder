@@ -22,6 +22,8 @@ import java.util.Optional;
 @ApiStatus.Internal
 public final class PathfinderEngine {
 
+    private static final double HITBOX_HALF_DIVISOR = 2.0;
+
     @Nullable
     private PathSession activeSession;
     private boolean computing;
@@ -76,7 +78,7 @@ public final class PathfinderEngine {
             return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored(), Optional.empty());
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
-        double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
+        double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / HITBOX_HALF_DIVISOR;
         List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(reduced);
         List<BlockPos> capped = new SegmentCapper(ctx.maxSegmentLength()).cap(smoothed);
         PathAssembler.AssemblyOutput assembled = PathAssembler.assemble(capped, ctx);

@@ -19,6 +19,8 @@ import java.util.List;
 
 final class PathAssembler {
 
+    private static final double HITBOX_HALF_DIVISOR = 2.0;
+
     private PathAssembler() {}
 
     record AssemblyOutput(@NotNull Path path, @NotNull PathDebugData debugData) {}
@@ -29,7 +31,7 @@ final class PathAssembler {
             Path empty = new Path(List.of(), 0, PathStatus.UNREACHABLE);
             return new AssemblyOutput(empty, new PathDebugData(List.of(), List.of()));
         }
-        double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
+        double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / HITBOX_HALF_DIVISOR;
         SubBlockSampler sampler = new SubBlockSampler(ctx.collisionLayer(), hitboxHalf, ctx.randomSeed());
         List<Vec3> sampled  = samplePoints(waypoints, sampler);
         List<Vec3> smoothed = new GradientDescentSmoother(ctx.collisionLayer(), hitboxHalf).smooth(sampled);
