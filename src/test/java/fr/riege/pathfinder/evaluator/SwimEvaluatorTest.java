@@ -48,6 +48,21 @@ class SwimEvaluatorTest {
         };
     }
 
+    private IWorldLayer worldWithFluidButSolid() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return true; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.WATER; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+    }
+
+    @Test
+    void waterloggedSolid_isImpossible() {
+        SwimEvaluator evaluator = new SwimEvaluator(worldWithFluidButSolid(), normalBlock(), standardEntity());
+        assertFalse(evaluator.evaluate(FROM, TO).isPossible());
+    }
+
     @Test
     void inWater_isPossible() {
         SwimEvaluator evaluator = new SwimEvaluator(worldWithFluid(FluidType.WATER), normalBlock(), standardEntity());

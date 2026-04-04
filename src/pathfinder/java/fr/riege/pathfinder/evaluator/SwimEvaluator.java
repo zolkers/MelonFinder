@@ -26,6 +26,7 @@ public final class SwimEvaluator implements IMovementEvaluator {
 
     @Override
     public @NotNull MovementResult evaluate(@NotNull BlockPos from, @NotNull BlockPos to) {
+        if (!worldLayer.isPassable(to)) return MovementResult.impossible();
         if (worldLayer.getFluidType(to) == FluidType.NONE) return MovementResult.impossible();
         float drag = blockPhysicsLayer.getDragFactor(to);
         double swimSpeed = entityPhysicsLayer.getSwimSpeed();
