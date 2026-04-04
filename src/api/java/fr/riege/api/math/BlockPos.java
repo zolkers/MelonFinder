@@ -108,7 +108,7 @@ public record BlockPos(int x, int y, int z) {
      *         supported coordinate range
      */
     public long asLong() {
-        return ((long) x & 0x3FFFFFFL) << 38 | ((long) y & 0xFFFL) << 26 | ((long) z & 0x3FFFFFFL);
+        return (x & 0x3FFFFFFL) << 38 | (y & 0xFFFL) << 26 | (z & 0x3FFFFFFL);
     }
 
     /**
