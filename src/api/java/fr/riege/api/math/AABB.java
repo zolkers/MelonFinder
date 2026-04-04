@@ -1,5 +1,6 @@
 package fr.riege.api.math;
 
+import fr.riege.api.layer.ICollisionLayer;
 import org.jetbrains.annotations.NotNull;
 
 /**
