@@ -17,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PathSmootherTest {
 
+    private static final double HITBOX_HALF = 0.3;
+    private static final double STUB_MAX_REACH = 5.0;
+    private static final int STUB_LIGHT_LEVEL = 15;
     private static final double WALL_X = 3.0;
     private static final double WALL_WIDTH = 1.0;
 
@@ -27,7 +30,7 @@ class PathSmootherTest {
             @Override
             public boolean hasCollisionAt(@NonNull AABB box) { return false; }
             @Override
-            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return 5.0; }
+            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return STUB_MAX_REACH; }
         };
     }
 
@@ -42,13 +45,13 @@ class PathSmootherTest {
             }
 
             @Override
-            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return 5.0; }
+            public double getMaxReach(@NonNull BlockPos from, @NonNull Direction dir, double hitboxHalf) { return STUB_MAX_REACH; }
         };
     }
 
     @Test
     void openPath_fewerNodesThanInput() {
-        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), HITBOX_HALF);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -64,7 +67,7 @@ class PathSmootherTest {
 
     @Test
     void wallBlockingLos_waypointPreserved() {
-        PathSmoother smoother = new PathSmoother(wallAt(), flatWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(wallAt(), flatWorld(), HITBOX_HALF);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -82,7 +85,7 @@ class PathSmootherTest {
 
     @Test
     void twoNodePath_returnedUnchanged() {
-        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), HITBOX_HALF);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(5, 64, 0)
@@ -98,7 +101,7 @@ class PathSmootherTest {
             @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
             @Override public boolean isSolid(@NonNull BlockPos pos) { return pos.y() == 63; }
             @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return STUB_LIGHT_LEVEL; }
         };
     }
 
@@ -112,13 +115,13 @@ class PathSmootherTest {
                 return false;
             }
             @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return STUB_LIGHT_LEVEL; }
         };
     }
 
     @Test
     void flatPath_groundPresent_isShortcutted() {
-        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), HITBOX_HALF);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -132,7 +135,7 @@ class PathSmootherTest {
 
     @Test
     void staircasePath_notShortcuttedAcrossElevation() {
-        PathSmoother smoother = new PathSmoother(openWorld(), staircaseWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), staircaseWorld(), HITBOX_HALF);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
