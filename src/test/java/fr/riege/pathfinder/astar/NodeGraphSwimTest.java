@@ -139,20 +139,7 @@ class NodeGraphSwimTest {
     void astar_throughWater_findsPath() {
         BlockPos start = new BlockPos(0, 64, 0);
         BlockPos goal  = new BlockPos(3, 64, 0);
-        Set<BlockPos> fluid = Set.of(
-            new BlockPos(0, 64, 0),
-            new BlockPos(1, 64, 0),
-            new BlockPos(2, 64, 0),
-            new BlockPos(3, 64, 0)
-        );
-        Set<BlockPos> solid = Set.of(
-            new BlockPos(0, 63, 0),
-            new BlockPos(1, 63, 0),
-            new BlockPos(2, 63, 0),
-            new BlockPos(3, 63, 0)
-        );
-        Set<BlockPos> walkable = Set.of(start, goal, new BlockPos(1, 64, 0), new BlockPos(2, 64, 0));
-        IWorldLayer w = world(fluid, walkable, solid);
+        IWorldLayer w = getIWorldLayer(start, goal);
         IBlockPhysicsLayer b = normalBlock();
         IEntityPhysicsLayer e = standardEntity();
         ICollisionLayer c = noCollision();
@@ -167,6 +154,23 @@ class NodeGraphSwimTest {
 
         assertEquals(PathStatus.FOUND, search.getLastStatus());
         assertEquals(goal, path.getLast());
+    }
+
+    private @NonNull IWorldLayer getIWorldLayer(BlockPos start, BlockPos goal) {
+        Set<BlockPos> fluid = Set.of(
+            new BlockPos(0, 64, 0),
+            new BlockPos(1, 64, 0),
+            new BlockPos(2, 64, 0),
+            new BlockPos(3, 64, 0)
+        );
+        Set<BlockPos> solid = Set.of(
+            new BlockPos(0, 63, 0),
+            new BlockPos(1, 63, 0),
+            new BlockPos(2, 63, 0),
+            new BlockPos(3, 63, 0)
+        );
+        Set<BlockPos> walkable = Set.of(start, goal, new BlockPos(1, 64, 0), new BlockPos(2, 64, 0));
+        return world(fluid, walkable, solid);
     }
 
     @Test
@@ -184,7 +188,6 @@ class NodeGraphSwimTest {
         IWorldLayer w = world(fluid, walkable, solid);
         IBlockPhysicsLayer b = normalBlock();
         IEntityPhysicsLayer e = standardEntity();
-        ICollisionLayer c = noCollision();
         OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
         registry.register(MovementKeys.SWIM, new SwimEvaluator(w, b, e));
         AStarSearch search = new AStarSearch(new NodeGraph(registry, w), 5_000L);
