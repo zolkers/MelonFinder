@@ -1,10 +1,13 @@
 package fr.riege.pathfinder.smooth;
 
 import fr.riege.api.layer.ICollisionLayer;
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
+import fr.riege.api.math.FluidType;
 import fr.riege.api.math.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +36,24 @@ class CatmullRomSmootherTest {
         };
     }
 
+    private IWorldLayer solidGroundWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NotNull BlockPos pos) { return true; }
+            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+        };
+    }
+
+    private IWorldLayer noGroundWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NotNull BlockPos pos) { return false; }
+            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+        };
+    }
+
     @Test
     void threeControlPoints_outputHasTwoGapsSampled() {
         List<Vec3> points = List.of(
@@ -40,7 +61,7 @@ class CatmullRomSmootherTest {
             new Vec3(5, 64, 0),
             new Vec3(10, 64, 0)
         );
-        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), 0.3);
+        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         // 2 gaps × 8 samples = 16 points
         assertEquals(2 * SAMPLES, result.size());
@@ -55,7 +76,7 @@ class CatmullRomSmootherTest {
             new Vec3(8, 64, 0),
             new Vec3(12, 64, 0)
         );
-        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), 0.3);
+        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         for (Vec3 pt : result) {
             assertEquals(0.0, pt.z(), 1e-9, "Z must stay 0 on a straight line");
@@ -70,7 +91,7 @@ class CatmullRomSmootherTest {
             new Vec3(0, 60, 0),
             new Vec3(8, 70, 0)
         );
-        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), 0.3);
+        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(SAMPLES, result.size());
         for (int k = 0; k < SAMPLES; k++) {
@@ -81,13 +102,13 @@ class CatmullRomSmootherTest {
     }
 
     @Test
-    void collision_fallsBackToNearerControlPoint() {
+    void collision_fallsBackToEndpoint() {
         List<Vec3> points = List.of(
             new Vec3(0, 64, 0),
             new Vec3(5, 64, 0),
             new Vec3(10, 64, 0)
         );
-        CatmullRomSmoother smoother = new CatmullRomSmoother(alwaysCollision(), 0.3);
+        CatmullRomSmoother smoother = new CatmullRomSmoother(alwaysCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         // Every sub-point must be one of the control points (p1 or p2 of its gap)
         List<Vec3> validFallbacks = List.of(
@@ -105,12 +126,29 @@ class CatmullRomSmootherTest {
             new Vec3(0, 64, 0),
             new Vec3(10, 64, 0)
         );
-        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), 0.3);
+        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(SAMPLES, result.size());
         Vec3 last = result.getLast();
         assertEquals(10.0, last.x(), 1e-9, "Last sub-point X must equal p2.x");
         assertEquals(64.0, last.y(), 1e-9, "Last sub-point Y must equal p2.y");
         assertEquals(0.0,  last.z(), 1e-9, "Last sub-point Z must equal p2.z");
+    }
+
+    @Test
+    void noGroundSupport_fallsBackToEndpoint() {
+        List<Vec3> points = List.of(
+            new Vec3(0, 64, 0),
+            new Vec3(5, 64, 0),
+            new Vec3(10, 64, 0)
+        );
+        CatmullRomSmoother smoother = new CatmullRomSmoother(noCollision(), noGroundWorld(), 0.3);
+        List<Vec3> result = smoother.smooth(points);
+        List<Vec3> validEndpoints = List.of(
+            new Vec3(0, 64, 0), new Vec3(5, 64, 0), new Vec3(10, 64, 0)
+        );
+        for (Vec3 pt : result) {
+            assertTrue(validEndpoints.contains(pt), "No-ground point must fall back to endpoint, got: " + pt);
+        }
     }
 }
