@@ -3,9 +3,9 @@
 	"id": "melonfinder",
 	"version": "${version}",
 	"name": "MelonFinder",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Lost in your world ? Find your melon !",
 	"authors": [
-		"Me!"
+		"EDGN!"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
