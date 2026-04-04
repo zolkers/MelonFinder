@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CatmullRomSmootherTest {
 
-    private static final int SAMPLES = 8; // must match CatmullRomSmoother.SAMPLES_PER_GAP
+    private static final int SAMPLES = CatmullRomSmoother.SAMPLES_PER_GAP;
 
     private ICollisionLayer noCollision() {
         return new ICollisionLayer() {

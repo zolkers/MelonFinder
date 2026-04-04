@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class CatmullRomSmoother {
 
-    private static final int    SAMPLES_PER_GAP = 8;
+    public static final int    SAMPLES_PER_GAP = 32;
     private static final double ENTITY_HEIGHT   = 1.8;
 
     private final ICollisionLayer collisionLayer;
