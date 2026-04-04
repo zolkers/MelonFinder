@@ -7,7 +7,6 @@ import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
 import fr.riege.api.math.FluidType;
 import fr.riege.api.math.Vec3;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
@@ -38,19 +37,19 @@ class CatmullRomSmootherTest {
 
     private IWorldLayer solidGroundWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
-            @Override public boolean isSolid(@NotNull BlockPos pos) { return true; }
-            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return true; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
     private IWorldLayer noGroundWorld() {
         return new IWorldLayer() {
-            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
-            @Override public boolean isSolid(@NotNull BlockPos pos) { return false; }
-            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
-            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
         };
     }
 
