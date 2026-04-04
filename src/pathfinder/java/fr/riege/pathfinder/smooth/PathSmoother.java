@@ -15,6 +15,7 @@ public final class PathSmoother {
 
     private static final int LOS_STEPS = 20;
     private static final double ENTITY_HEIGHT = 1.8;
+    private static final double BLOCK_CENTER_OFFSET = 0.5;
 
     private final ICollisionLayer collisionLayer;
     private final IWorldLayer worldLayer;
@@ -49,12 +50,12 @@ public final class PathSmoother {
     }
 
     private boolean hasLos(@NotNull BlockPos from, @NotNull BlockPos to) {
-        double fromX = from.x() + 0.5;
+        double fromX = from.x() + BLOCK_CENTER_OFFSET;
         double fromY = from.y();
-        double fromZ = from.z() + 0.5;
-        double toX = to.x() + 0.5;
+        double fromZ = from.z() + BLOCK_CENTER_OFFSET;
+        double toX = to.x() + BLOCK_CENTER_OFFSET;
         double toY = to.y();
-        double toZ = to.z() + 0.5;
+        double toZ = to.z() + BLOCK_CENTER_OFFSET;
 
         for (int step = 0; step <= LOS_STEPS; step++) {
             double t = (double) step / LOS_STEPS;
