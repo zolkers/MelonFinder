@@ -1,10 +1,13 @@
 package fr.riege.pathfinder.smooth;
 
 import fr.riege.api.layer.ICollisionLayer;
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
+import fr.riege.api.math.FluidType;
 import fr.riege.api.math.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +34,28 @@ class GradientDescentSmootherTest {
         };
     }
 
+    private IWorldLayer solidGroundWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NotNull BlockPos pos) { return true; }
+            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+        };
+    }
+
+    private IWorldLayer noGroundWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NotNull BlockPos pos) { return false; }
+            @Override public boolean isSolid(@NotNull BlockPos pos) { return false; }
+            @Override public @NotNull FluidType getFluidType(@NotNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NotNull BlockPos pos) { return 15; }
+        };
+    }
+
     @Test
     void twoPoints_returnedUnchanged() {
         List<Vec3> points = List.of(new Vec3(0, 64, 0), new Vec3(10, 64, 0));
-        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(2, result.size());
         assertEquals(new Vec3(0, 64, 0), result.getFirst());
@@ -43,13 +64,12 @@ class GradientDescentSmootherTest {
 
     @Test
     void collinearPoints_noElasticDrift() {
-        // All points on a straight X line — midpoint == p, so elastic term is zero
         List<Vec3> points = List.of(
             new Vec3(0, 64, 0),
             new Vec3(5, 64, 0),
             new Vec3(10, 64, 0)
         );
-        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(new Vec3(0, 64, 0), result.getFirst());
         assertEquals(new Vec3(10, 64, 0), result.getLast());
@@ -60,14 +80,12 @@ class GradientDescentSmootherTest {
 
     @Test
     void bentPath_interiorPulledTowardMidpoint() {
-        // Middle at (5,64,5), neighbors at (0,64,0) and (10,64,0)
-        // Midpoint of neighbors = (5,64,0) — elastic pulls interior toward z=0
         List<Vec3> points = List.of(
             new Vec3(0, 64, 0),
             new Vec3(5, 64, 5),
             new Vec3(10, 64, 0)
         );
-        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(3, result.size());
         assertEquals(new Vec3(0, 64, 0), result.getFirst());
@@ -83,7 +101,7 @@ class GradientDescentSmootherTest {
             new Vec3(5, 64, 5),
             new Vec3(10, 64, 0)
         );
-        GradientDescentSmoother smoother = new GradientDescentSmoother(alwaysCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(alwaysCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(new Vec3(5, 64, 5), result.get(1), "Collision must prevent any movement");
     }
@@ -95,7 +113,7 @@ class GradientDescentSmootherTest {
             new Vec3(5, 65, 5),
             new Vec3(10, 70, 0)
         );
-        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(65.0, result.get(1).y(), "Y coordinate must never be modified");
     }
@@ -108,8 +126,20 @@ class GradientDescentSmootherTest {
             new Vec3(6, 64, 1),
             new Vec3(10, 64, 0)
         );
-        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), 0.3);
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), solidGroundWorld(), 0.3);
         List<Vec3> result = smoother.smooth(points);
         assertEquals(points.size(), result.size());
+    }
+
+    @Test
+    void noGroundSupport_candidateRejected() {
+        List<Vec3> points = List.of(
+            new Vec3(0, 64, 0),
+            new Vec3(5, 64, 5),
+            new Vec3(10, 64, 0)
+        );
+        GradientDescentSmoother smoother = new GradientDescentSmoother(noCollision(), noGroundWorld(), 0.3);
+        List<Vec3> result = smoother.smooth(points);
+        assertEquals(new Vec3(5, 64, 5), result.get(1), "Missing ground support must prevent movement");
     }
 }

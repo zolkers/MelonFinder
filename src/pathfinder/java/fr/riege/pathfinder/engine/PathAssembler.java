@@ -34,7 +34,7 @@ final class PathAssembler {
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / HITBOX_HALF_DIVISOR;
         SubBlockSampler sampler = new SubBlockSampler(ctx.collisionLayer(), hitboxHalf, ctx.randomSeed());
         List<Vec3> sampled  = samplePoints(waypoints, sampler);
-        List<Vec3> smoothed = new GradientDescentSmoother(ctx.collisionLayer(), hitboxHalf).smooth(sampled);
+        List<Vec3> smoothed = new GradientDescentSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(sampled);
         List<Vec3> dense    = new CatmullRomSmoother(ctx.collisionLayer(), hitboxHalf).smooth(smoothed);
         List<Segment> segments = buildSegments(dense);
         double totalCost = segments.stream().mapToDouble(Segment::length).sum();

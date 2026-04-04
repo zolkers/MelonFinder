@@ -1,7 +1,10 @@
 package fr.riege.pathfinder.smooth;
 
 import fr.riege.api.layer.ICollisionLayer;
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.AABB;
+import fr.riege.api.math.BlockPos;
+import fr.riege.api.math.FluidType;
 import fr.riege.api.math.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,10 +13,10 @@ import java.util.List;
 
 public final class GradientDescentSmoother {
 
-    private static final int    ITERATIONS   = 10;
-    private static final double ALPHA        = 0.25;
-    private static final double BETA         = 0.15;
-    private static final double PROBE_RADIUS = 0.6;
+    private static final int    ITERATIONS    = 10;
+    private static final double ALPHA         = 0.25;
+    private static final double BETA          = 0.15;
+    private static final double PROBE_RADIUS  = 0.7;
     private static final double ENTITY_HEIGHT = 1.8;
 
     private static final double INV_SQRT2 = 1.0 / Math.sqrt(2.0);
@@ -30,10 +33,14 @@ public final class GradientDescentSmoother {
     };
 
     private final ICollisionLayer collisionLayer;
+    private final IWorldLayer worldLayer;
     private final double hitboxHalf;
 
-    public GradientDescentSmoother(@NotNull ICollisionLayer collisionLayer, double hitboxHalf) {
+    public GradientDescentSmoother(@NotNull ICollisionLayer collisionLayer,
+                                   @NotNull IWorldLayer worldLayer,
+                                   double hitboxHalf) {
         this.collisionLayer = collisionLayer;
+        this.worldLayer = worldLayer;
         this.hitboxHalf = hitboxHalf;
     }
 
@@ -50,7 +57,7 @@ public final class GradientDescentSmoother {
         List<Vec3> result = new ArrayList<>(points);
         for (int i = 1; i < points.size() - 1; i++) {
             Vec3 candidate = computeNewPos(points, i);
-            if (!hasCollision(candidate)) {
+            if (isValidPosition(candidate)) {
                 result.set(i, candidate);
             }
         }
@@ -80,6 +87,20 @@ public final class GradientDescentSmoother {
             }
         }
         return new double[]{rx, rz};
+    }
+
+    private boolean isValidPosition(@NotNull Vec3 pos) {
+        if (hasCollision(pos)) return false;
+        return hasGroundSupport(pos);
+    }
+
+    private boolean hasGroundSupport(@NotNull Vec3 pos) {
+        int bx = (int) Math.floor(pos.x());
+        int by = (int) Math.floor(pos.y());
+        int bz = (int) Math.floor(pos.z());
+        BlockPos current = new BlockPos(bx, by, bz);
+        if (worldLayer.getFluidType(current) != FluidType.NONE) return true;
+        return worldLayer.isSolid(new BlockPos(bx, by - 1, bz));
     }
 
     private boolean hasCollision(@NotNull Vec3 pos) {
