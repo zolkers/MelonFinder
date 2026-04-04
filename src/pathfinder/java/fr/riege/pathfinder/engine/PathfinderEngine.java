@@ -76,7 +76,7 @@ public final class PathfinderEngine {
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
-        List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), hitboxHalf).smooth(reduced);
+        List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(reduced);
         List<BlockPos> capped = new SegmentCapper(ctx.maxSegmentLength()).cap(smoothed);
         Path path = PathAssembler.assemble(capped, ctx);
         return new PathResult(path, System.currentTimeMillis() - startMs, raw.size());

@@ -1,8 +1,10 @@
 package fr.riege.pathfinder.smooth;
 
 import fr.riege.api.layer.ICollisionLayer;
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
+import fr.riege.api.math.FluidType;
 import fr.riege.api.math.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,10 +17,14 @@ public final class PathSmoother {
     private static final double ENTITY_HEIGHT = 1.8;
 
     private final ICollisionLayer collisionLayer;
+    private final IWorldLayer worldLayer;
     private final double hitboxHalf;
 
-    public PathSmoother(@NotNull ICollisionLayer collisionLayer, double hitboxHalf) {
+    public PathSmoother(@NotNull ICollisionLayer collisionLayer,
+                        @NotNull IWorldLayer worldLayer,
+                        double hitboxHalf) {
         this.collisionLayer = collisionLayer;
+        this.worldLayer = worldLayer;
         this.hitboxHalf = hitboxHalf;
     }
 
@@ -55,13 +61,28 @@ public final class PathSmoother {
             double cx = fromX + (toX - fromX) * t;
             double cy = fromY + (toY - fromY) * t;
             double cz = fromZ + (toZ - fromZ) * t;
+
             Vec3 minVec = new Vec3(cx - hitboxHalf, cy, cz - hitboxHalf);
             Vec3 maxVec = new Vec3(cx + hitboxHalf, cy + ENTITY_HEIGHT, cz + hitboxHalf);
-            AABB box = new AABB(minVec, maxVec);
-            if (collisionLayer.hasCollisionAt(box)) {
+            if (collisionLayer.hasCollisionAt(new AABB(minVec, maxVec))) {
+                return false;
+            }
+            if (!hasGroundSupport(cx, cy, cz)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean hasGroundSupport(double cx, double cy, double cz) {
+        int bx = (int) Math.floor(cx);
+        int by = (int) Math.floor(cy);
+        int bz = (int) Math.floor(cz);
+        BlockPos current = new BlockPos(bx, by, bz);
+        if (worldLayer.getFluidType(current) != FluidType.NONE) {
+            return true;
+        }
+        BlockPos below = new BlockPos(bx, by - 1, bz);
+        return worldLayer.isSolid(below);
     }
 }

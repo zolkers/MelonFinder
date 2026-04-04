@@ -1,9 +1,11 @@
 package fr.riege.pathfinder.smooth;
 
 import fr.riege.api.layer.ICollisionLayer;
+import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.AABB;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.Direction;
+import fr.riege.api.math.FluidType;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +46,7 @@ class PathSmootherTest {
 
     @Test
     void openPath_fewerNodesThanInput() {
-        PathSmoother smoother = new PathSmoother(openWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
         // L-shaped path: go east 3, then north 3 — with open world the corner should be culled
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
@@ -63,7 +65,7 @@ class PathSmootherTest {
     void wallBlockingLos_waypointPreserved() {
         // Wall sits between x=2 and x=3. Path goes from (0,64,0) → (2,64,0) → (2,64,2) → (4,64,2)
         // LOS from (0,64,0) to (4,64,2) passes through the wall region; (2,64,0) or (2,64,2) must be kept
-        PathSmoother smoother = new PathSmoother(wallAt(), 0.3);
+        PathSmoother smoother = new PathSmoother(wallAt(), flatWorld(), 0.3);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -83,7 +85,7 @@ class PathSmootherTest {
 
     @Test
     void twoNodePath_returnedUnchanged() {
-        PathSmoother smoother = new PathSmoother(openWorld(), 0.3);
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
         List<BlockPos> path = Arrays.asList(
             new BlockPos(0, 64, 0),
             new BlockPos(5, 64, 0)
@@ -92,5 +94,58 @@ class PathSmootherTest {
         assertEquals(2, result.size());
         assertEquals(new BlockPos(0, 64, 0), result.get(0));
         assertEquals(new BlockPos(5, 64, 0), result.get(1));
+    }
+
+    private IWorldLayer flatWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return pos.y() == 63; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+    }
+
+    private IWorldLayer staircaseWorld() {
+        return new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return true; }
+            @Override public boolean isSolid(@NonNull BlockPos pos) {
+                if (pos.x() <= 2 && pos.y() == 63) return true;
+                if (pos.x() >= 3 && pos.x() <= 4 && pos.y() == 64) return true;
+                if (pos.x() >= 5 && pos.y() == 65) return true;
+                return false;
+            }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+    }
+
+    @Test
+    void flatPath_groundPresent_isShortcutted() {
+        PathSmoother smoother = new PathSmoother(openWorld(), flatWorld(), 0.3);
+        List<BlockPos> path = Arrays.asList(
+            new BlockPos(0, 64, 0),
+            new BlockPos(1, 64, 0),
+            new BlockPos(2, 64, 0),
+            new BlockPos(3, 64, 0),
+            new BlockPos(4, 64, 0)
+        );
+        List<BlockPos> result = smoother.smooth(path);
+        assertTrue(result.size() < path.size(), "Flat path with ground must still be shortcuttable");
+    }
+
+    @Test
+    void staircasePath_notShortcuttedAcrossElevation() {
+        PathSmoother smoother = new PathSmoother(openWorld(), staircaseWorld(), 0.3);
+        List<BlockPos> path = Arrays.asList(
+            new BlockPos(0, 64, 0),
+            new BlockPos(1, 64, 0),
+            new BlockPos(2, 64, 0),
+            new BlockPos(3, 65, 0),
+            new BlockPos(4, 65, 0),
+            new BlockPos(5, 66, 0),
+            new BlockPos(6, 66, 0)
+        );
+        List<BlockPos> result = smoother.smooth(path);
+        assertTrue(result.size() > 2, "Staircase must not be fully shortcutted (would cause flying)");
     }
 }
