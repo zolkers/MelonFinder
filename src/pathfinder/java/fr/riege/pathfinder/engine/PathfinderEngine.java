@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @ApiStatus.Internal
 public final class PathfinderEngine {
@@ -72,13 +73,18 @@ public final class PathfinderEngine {
         lastParentMap = search.getLastParentMap();
         if (search.getLastStatus() != PathStatus.FOUND) {
             Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
-            return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored());
+            return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored(), Optional.empty());
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
         List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(reduced);
         List<BlockPos> capped = new SegmentCapper(ctx.maxSegmentLength()).cap(smoothed);
-        Path path = PathAssembler.assemble(capped, ctx);
-        return new PathResult(path, System.currentTimeMillis() - startMs, raw.size());
+        PathAssembler.AssemblyOutput assembled = PathAssembler.assemble(capped, ctx);
+        return new PathResult(
+            assembled.path(),
+            System.currentTimeMillis() - startMs,
+            raw.size(),
+            Optional.of(assembled.debugData())
+        );
     }
 }

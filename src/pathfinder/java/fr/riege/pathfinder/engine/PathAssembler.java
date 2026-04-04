@@ -5,6 +5,7 @@ import fr.riege.api.math.Vec3;
 import fr.riege.api.path.MovementType;
 import fr.riege.api.path.Node;
 import fr.riege.api.path.Path;
+import fr.riege.api.path.PathDebugData;
 import fr.riege.api.path.PathStatus;
 import fr.riege.api.path.Segment;
 import fr.riege.api.registry.MovementKeys;
@@ -20,8 +21,14 @@ final class PathAssembler {
 
     private PathAssembler() {}
 
-    static @NotNull Path assemble(@NotNull List<BlockPos> waypoints, @NotNull PathfinderContext ctx) {
-        if (waypoints.isEmpty()) return new Path(List.of(), 0, PathStatus.UNREACHABLE);
+    record AssemblyOutput(@NotNull Path path, @NotNull PathDebugData debugData) {}
+
+    static @NotNull AssemblyOutput assemble(@NotNull List<BlockPos> waypoints,
+                                            @NotNull PathfinderContext ctx) {
+        if (waypoints.isEmpty()) {
+            Path empty = new Path(List.of(), 0, PathStatus.UNREACHABLE);
+            return new AssemblyOutput(empty, new PathDebugData(List.of(), List.of()));
+        }
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / 2.0;
         SubBlockSampler sampler = new SubBlockSampler(ctx.collisionLayer(), hitboxHalf, ctx.randomSeed());
         List<Vec3> sampled  = samplePoints(waypoints, sampler);
@@ -29,7 +36,9 @@ final class PathAssembler {
         List<Vec3> dense    = new CatmullRomSmoother(ctx.collisionLayer(), hitboxHalf).smooth(smoothed);
         List<Segment> segments = buildSegments(dense);
         double totalCost = segments.stream().mapToDouble(Segment::length).sum();
-        return new Path(segments, totalCost, PathStatus.FOUND);
+        Path path = new Path(segments, totalCost, PathStatus.FOUND);
+        PathDebugData debugData = new PathDebugData(List.copyOf(smoothed), List.copyOf(dense));
+        return new AssemblyOutput(path, debugData);
     }
 
     private static @NotNull List<Vec3> samplePoints(

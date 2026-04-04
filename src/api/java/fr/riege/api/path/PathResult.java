@@ -1,5 +1,7 @@
 package fr.riege.api.path;
 
+import java.util.Optional;
+
 /**
  * An immutable summary of a completed pathfinding computation, bundling the
  * resulting {@link Path} with performance diagnostics.
@@ -27,9 +29,11 @@ package fr.riege.api.path;
  * @param nodesExplored the total number of A* nodes that were popped from the
  *                      open set and expanded during the search; always
  *                      {@code >= 0}
+ * @param debugData     intermediate smoother results for debug rendering;
+ *                      empty when the path was not found
  *
  * @see Path
  * @see PathStatus
  * @see fr.riege.api.event.events.PathCompleteEvent
  */
-public record PathResult(Path path, long computeMs, int nodesExplored) {}
+public record PathResult(Path path, long computeMs, int nodesExplored, Optional<PathDebugData> debugData) {}
