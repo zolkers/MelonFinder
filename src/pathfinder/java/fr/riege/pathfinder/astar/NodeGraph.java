@@ -65,9 +65,10 @@ public final class NodeGraph {
             for (int dy = 2; dy <= MAX_FALL_DEPTH + 1; dy++) {
                 BlockPos to = pos.offset(dx, -dy, dz);
                 MovementResult result = fallEval.evaluate(pos, to);
-                if (!result.isPossible()) continue;
-                neighbors.add(new NeighborMove(to, MovementKeys.FALL, result.getCost()));
-                break;
+                if (result.isPossible()) {
+                    neighbors.add(new NeighborMove(to, MovementKeys.FALL, result.getCost()));
+                    break;
+                }
             }
         }
     }

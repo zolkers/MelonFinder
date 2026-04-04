@@ -139,24 +139,6 @@ class NodeGraphSwimTest {
     void astar_throughWater_findsPath() {
         BlockPos start = new BlockPos(0, 64, 0);
         BlockPos goal  = new BlockPos(3, 64, 0);
-        IWorldLayer w = getIWorldLayer(start, goal);
-        IBlockPhysicsLayer b = normalBlock();
-        IEntityPhysicsLayer e = standardEntity();
-        ICollisionLayer c = noCollision();
-        OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
-        registry.register(MovementKeys.WALK, new WalkEvaluator(w, b));
-        registry.register(MovementKeys.JUMP, new JumpEvaluator(w, b, e, c));
-        registry.register(MovementKeys.FALL, new FallEvaluator(w, e));
-        registry.register(MovementKeys.SWIM, new SwimEvaluator(w, b, e));
-        AStarSearch search = new AStarSearch(new NodeGraph(registry, w), 5_000L);
-
-        List<BlockPos> path = search.search(start, new BlockGoal(goal));
-
-        assertEquals(PathStatus.FOUND, search.getLastStatus());
-        assertEquals(goal, path.getLast());
-    }
-
-    private @NonNull IWorldLayer getIWorldLayer(BlockPos start, BlockPos goal) {
         Set<BlockPos> fluid = Set.of(
             new BlockPos(0, 64, 0),
             new BlockPos(1, 64, 0),
@@ -170,7 +152,13 @@ class NodeGraphSwimTest {
             new BlockPos(3, 63, 0)
         );
         Set<BlockPos> walkable = Set.of(start, goal, new BlockPos(1, 64, 0), new BlockPos(2, 64, 0));
-        return world(fluid, walkable, solid);
+        NodeGraph graph = buildGraph(fluid, walkable, solid);
+        AStarSearch search = new AStarSearch(graph, 5_000L);
+
+        List<BlockPos> path = search.search(start, new BlockGoal(goal));
+
+        assertEquals(PathStatus.FOUND, search.getLastStatus());
+        assertEquals(goal, path.getLast());
     }
 
     @Test
