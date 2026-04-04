@@ -15,7 +15,7 @@ public final class PathSmoother {
 
     private static final int LOS_STEPS = 20;
     private static final double ENTITY_HEIGHT = 1.8;
-    private static final double BLOCK_CENTER_OFFSET = 0.5;
+    private static final double BLOCK_CENTER_OFFSET = 0.2;
 
     private final ICollisionLayer collisionLayer;
     private final IWorldLayer worldLayer;
