@@ -27,6 +27,7 @@ public final class PathfinderContextFactory {
     private static final long DEFAULT_MAX_COMPUTE_MS = 5_000L;
     private static final int DEFAULT_MAX_SEGMENT_LENGTH = 12;
     private static final long DEFAULT_RANDOM_SEED = 42L;
+    private static final double DEFAULT_HEURISTIC_WEIGHT = 1.15;
 
     private PathfinderContextFactory() {}
 
@@ -40,7 +41,8 @@ public final class PathfinderContextFactory {
         return new PathfinderContext(
             world, blockPhysics, entityPhysics, collision,
             registry, new Euclidean3DHeuristic(),
-            DEFAULT_MAX_COMPUTE_MS, DEFAULT_MAX_SEGMENT_LENGTH, DEFAULT_RANDOM_SEED);
+            DEFAULT_MAX_COMPUTE_MS, DEFAULT_MAX_SEGMENT_LENGTH, DEFAULT_RANDOM_SEED,
+            DEFAULT_HEURISTIC_WEIGHT);
     }
 
     private static @NotNull IRegistry<IMovementEvaluator> buildRegistry(
@@ -53,7 +55,7 @@ public final class PathfinderContextFactory {
         registry.register(MovementKeys.JUMP,    new JumpEvaluator(world, blockPhysics, entityPhysics, collision));
         registry.register(MovementKeys.FALL,    new FallEvaluator(world, entityPhysics));
         registry.register(MovementKeys.SWIM,    new SwimEvaluator(world, blockPhysics, entityPhysics));
-        registry.register(MovementKeys.CLIMB,   new ClimbEvaluator(blockPhysics));
+        registry.register(MovementKeys.CLIMB,   new ClimbEvaluator(world));
         registry.register(MovementKeys.SPRINT,  new SprintEvaluator(world, blockPhysics, entityPhysics));
         registry.register(MovementKeys.SNEAK,   new SneakEvaluator(world, blockPhysics, entityPhysics));
         registry.register(MovementKeys.PARKOUR, new ParkourEvaluator(world));

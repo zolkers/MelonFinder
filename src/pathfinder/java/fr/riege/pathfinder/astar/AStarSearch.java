@@ -4,6 +4,7 @@ import fr.riege.api.goal.IGoal;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.path.PathStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,16 +14,24 @@ import java.util.Map;
 
 public final class AStarSearch {
 
+    private static final int MIN_PARTIAL_DIST_SQ = 25; // 5 blocks squared
+
     private final NodeGraph graph;
     private final long maxComputeMs;
+    private final double heuristicWeight;
     private PathStatus lastStatus;
     private int nodesExplored;
     private volatile Map<BlockPos, Double> lastExploredCosts;
     private volatile Map<BlockPos, BlockPos> lastParentMap;
 
     public AStarSearch(@NotNull NodeGraph graph, long maxComputeMs) {
+        this(graph, maxComputeMs, 1.0);
+    }
+
+    public AStarSearch(@NotNull NodeGraph graph, long maxComputeMs, double heuristicWeight) {
         this.graph = graph;
         this.maxComputeMs = maxComputeMs;
+        this.heuristicWeight = heuristicWeight;
         this.lastStatus = PathStatus.CANCELLED;
         this.lastExploredCosts = Collections.emptyMap();
         this.lastParentMap = Collections.emptyMap();
@@ -50,14 +59,17 @@ public final class AStarSearch {
 
         SearchNode startNode = getOrCreate(nodes, start);
         startNode.setGCost(0);
-        startNode.setHCost(goal.heuristicCost(start));
+        startNode.setHCost(heuristicWeight * goal.heuristicCost(start));
         openSet.insert(startNode);
+
+        SearchNode bestSoFar = null;
+        double bestSoFarH = Double.MAX_VALUE;
 
         while (!openSet.isEmpty()) {
             if ((iterations & 63) == 0 && System.currentTimeMillis() >= deadline) {
                 lastStatus = PathStatus.TIMEOUT;
                 nodesExplored = iterations;
-                return Collections.emptyList();
+                return partialPath(start, bestSoFar);
             }
             iterations++;
 
@@ -70,21 +82,42 @@ public final class AStarSearch {
                 return reconstructPath(current);
             }
 
+            double h = goal.heuristicCost(current.pos());
+            if (h < bestSoFarH && distSq(start, current.pos()) >= MIN_PARTIAL_DIST_SQ) {
+                bestSoFarH = h;
+                bestSoFar = current;
+            }
+
             for (NeighborMove move : graph.getNeighbors(current.pos())) {
                 SearchNode neighbor = getOrCreate(nodes, move.to());
                 double tentativeG = current.gCost() + move.edgeCost();
                 if (neighbor.isClosed() || tentativeG >= neighbor.gCost()) continue;
 
                 neighbor.setGCost(tentativeG);
-                neighbor.setHCost(goal.heuristicCost(move.to()));
+                neighbor.setHCost(heuristicWeight * goal.heuristicCost(move.to()));
                 neighbor.setParent(current);
                 openSet.upsert(neighbor);
             }
         }
 
-        lastStatus = PathStatus.UNREACHABLE;
         nodesExplored = iterations;
-        return Collections.emptyList();
+        return partialPath(start, bestSoFar);
+    }
+
+    private @NotNull List<BlockPos> partialPath(@NotNull BlockPos start, @Nullable SearchNode bestSoFar) {
+        if (bestSoFar == null) {
+            lastStatus = PathStatus.UNREACHABLE;
+            return Collections.emptyList();
+        }
+        lastStatus = PathStatus.PARTIAL;
+        return reconstructPath(bestSoFar);
+    }
+
+    private static int distSq(@NotNull BlockPos a, @NotNull BlockPos b) {
+        int dx = b.x() - a.x();
+        int dy = b.y() - a.y();
+        int dz = b.z() - a.z();
+        return dx * dx + dy * dy + dz * dz;
     }
 
     private void buildSnapshots(@NotNull Map<Long, SearchNode> nodes) {

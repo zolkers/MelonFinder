@@ -25,8 +25,8 @@ public final class PathfinderEngine {
     private static final double HITBOX_HALF_DIVISOR = 2.0;
 
     @Nullable
-    private PathSession activeSession;
-    private boolean computing;
+    private volatile PathSession activeSession;
+    private volatile boolean computing;
     private volatile Map<BlockPos, Double> lastExploredCosts = Collections.emptyMap();
     private volatile Map<BlockPos, BlockPos> lastParentMap = Collections.emptyMap();
 
@@ -69,19 +69,20 @@ public final class PathfinderEngine {
             @NotNull PathfinderContext ctx) {
         long startMs = System.currentTimeMillis();
         NodeGraph graph = new NodeGraph(ctx.evaluatorRegistry(), ctx.worldLayer());
-        AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs());
+        AStarSearch search = new AStarSearch(graph, ctx.maxComputeMs(), ctx.heuristicWeight());
         List<BlockPos> raw = search.search(from, goal);
         lastExploredCosts = search.getLastExploredCosts();
         lastParentMap = search.getLastParentMap();
-        if (search.getLastStatus() != PathStatus.FOUND) {
-            Path empty = new Path(Collections.emptyList(), 0, search.getLastStatus());
+        PathStatus status = search.getLastStatus();
+        if (status != PathStatus.FOUND && status != PathStatus.PARTIAL) {
+            Path empty = new Path(Collections.emptyList(), 0, status);
             return new PathResult(empty, System.currentTimeMillis() - startMs, search.getNodesExplored(), Optional.empty());
         }
         List<BlockPos> reduced = new NodeReducer().reduce(raw);
         double hitboxHalf = ctx.entityPhysicsLayer().getHitboxWidth() / HITBOX_HALF_DIVISOR;
         List<BlockPos> smoothed = new PathSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(reduced);
         List<BlockPos> capped = new SegmentCapper(ctx.maxSegmentLength()).cap(smoothed);
-        PathAssembler.AssemblyOutput assembled = PathAssembler.assemble(capped, ctx);
+        PathAssembler.AssemblyOutput assembled = PathAssembler.assemble(capped, ctx, status);
         return new PathResult(
             assembled.path(),
             System.currentTimeMillis() - startMs,

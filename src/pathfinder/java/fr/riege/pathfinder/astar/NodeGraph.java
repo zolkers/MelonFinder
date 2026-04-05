@@ -33,6 +33,8 @@ public final class NodeGraph {
         List<NeighborMove> neighbors = new ArrayList<>();
         addHorizontalNeighbors(pos, neighbors);
         addFallNeighbors(pos, neighbors);
+        addClimbNeighbors(pos, neighbors);
+        addParkourNeighbors(pos, neighbors);
         if (worldLayer.getFluidType(pos) != FluidType.NONE) {
             addSwimNeighbors(pos, neighbors);
         }
@@ -40,8 +42,9 @@ public final class NodeGraph {
     }
 
     private void addHorizontalNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
-        Optional<IMovementEvaluator> walkOpt = evaluatorRegistry.get(MovementKeys.WALK);
-        Optional<IMovementEvaluator> jumpOpt = evaluatorRegistry.get(MovementKeys.JUMP);
+        Optional<IMovementEvaluator> walkOpt   = evaluatorRegistry.get(MovementKeys.WALK);
+        Optional<IMovementEvaluator> jumpOpt   = evaluatorRegistry.get(MovementKeys.JUMP);
+        Optional<IMovementEvaluator> sprintOpt = evaluatorRegistry.get(MovementKeys.SPRINT);
 
         for (int i = 0; i < DX.length; i++) {
             int dx = DX[i];
@@ -51,6 +54,30 @@ public final class NodeGraph {
                 tryMove(pos, dx, -1, dz, eval, MovementKeys.WALK, neighbors);
             });
             jumpOpt.ifPresent(eval -> tryMove(pos, dx, 1, dz, eval, MovementKeys.JUMP, neighbors));
+            sprintOpt.ifPresent(eval -> {
+                tryMove(pos, dx, 0, dz, eval, MovementKeys.SPRINT, neighbors);
+                tryMove(pos, dx, -1, dz, eval, MovementKeys.SPRINT, neighbors);
+            });
+        }
+    }
+
+    private void addClimbNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
+        Optional<IMovementEvaluator> climbOpt = evaluatorRegistry.get(MovementKeys.CLIMB);
+        if (climbOpt.isEmpty()) return;
+        IMovementEvaluator eval = climbOpt.get();
+        tryMove(pos, 0, 1,  0, eval, MovementKeys.CLIMB, neighbors);
+        tryMove(pos, 0, -1, 0, eval, MovementKeys.CLIMB, neighbors);
+    }
+
+    private static final int[] PARKOUR_DX = { 2, -2,  0,  0};
+    private static final int[] PARKOUR_DZ = { 0,  0,  2, -2};
+
+    private void addParkourNeighbors(@NotNull BlockPos pos, @NotNull List<NeighborMove> neighbors) {
+        Optional<IMovementEvaluator> parkourOpt = evaluatorRegistry.get(MovementKeys.PARKOUR);
+        if (parkourOpt.isEmpty()) return;
+        IMovementEvaluator eval = parkourOpt.get();
+        for (int i = 0; i < PARKOUR_DX.length; i++) {
+            tryMove(pos, PARKOUR_DX[i], 0, PARKOUR_DZ[i], eval, MovementKeys.PARKOUR, neighbors);
         }
     }
 
@@ -64,6 +91,7 @@ public final class NodeGraph {
             int dz = DZ[i];
             for (int dy = 2; dy <= MAX_FALL_DEPTH + 1; dy++) {
                 BlockPos to = pos.offset(dx, -dy, dz);
+                if (!worldLayer.isChunkLoaded(to)) break;
                 MovementResult result = fallEval.evaluate(pos, to);
                 if (result.isPossible()) {
                     neighbors.add(new NeighborMove(to, MovementKeys.FALL, result.getCost()));
@@ -89,6 +117,7 @@ public final class NodeGraph {
             @NotNull IMovementEvaluator evaluator, @NotNull RegistryKey key,
             @NotNull List<NeighborMove> neighbors) {
         BlockPos to = pos.offset(dx, dy, dz);
+        if (!worldLayer.isChunkLoaded(to)) return;
         MovementResult result = evaluator.evaluate(pos, to);
         if (result.isPossible()) {
             neighbors.add(new NeighborMove(to, key, result.getCost()));

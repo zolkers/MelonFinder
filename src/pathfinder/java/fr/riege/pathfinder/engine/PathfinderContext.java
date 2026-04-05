@@ -11,6 +11,7 @@ import fr.riege.pathfinder.heuristic.IHeuristic;
 public record PathfinderContext(IWorldLayer worldLayer, IBlockPhysicsLayer blockPhysicsLayer,
                                 IEntityPhysicsLayer entityPhysicsLayer, ICollisionLayer collisionLayer,
                                 IRegistry<IMovementEvaluator> evaluatorRegistry, IHeuristic heuristic,
-                                long maxComputeMs, int maxSegmentLength, long randomSeed) {
+                                long maxComputeMs, int maxSegmentLength, long randomSeed,
+                                double heuristicWeight) {
 
 }

@@ -84,4 +84,21 @@ class FallEvaluatorTest {
         FallEvaluator evaluator = new FallEvaluator(walkableWorld(), lethalFallEntity());
         assertFalse(evaluator.evaluate(FROM, TO_DOWN).isPossible());
     }
+
+    @Test
+    void lowCeilingAtDestination_isImpossible() {
+        // to.y+2 is solid — not enough headroom to land (player is 1.8 blocks tall)
+        BlockPos ceiling = new BlockPos(TO_DOWN.x(), TO_DOWN.y() + 2, TO_DOWN.z());
+        IWorldLayer lowCeiling = new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) {
+                // Simulate correct 2-block clearance check: TO_DOWN not walkable because ceiling at y+2
+                return !pos.equals(TO_DOWN);
+            }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return pos.equals(ceiling); }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+        FallEvaluator evaluator = new FallEvaluator(lowCeiling, standardEntity());
+        assertFalse(evaluator.evaluate(FROM, TO_DOWN).isPossible());
+    }
 }

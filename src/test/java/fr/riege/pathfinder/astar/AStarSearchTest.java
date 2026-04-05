@@ -92,7 +92,7 @@ class AStarSearchTest {
         };
     }
 
-    private AStarSearch buildSearch(Set<BlockPos> walls) {
+    private NodeGraph buildGraph(Set<BlockPos> walls) {
         IWorldLayer world = flatWorld(walls);
         IBlockPhysicsLayer block = normalBlock();
         IEntityPhysicsLayer entity = standardEntity();
@@ -103,8 +103,11 @@ class AStarSearchTest {
         registry.register(MovementKeys.JUMP, new JumpEvaluator(world, block, entity, collision));
         registry.register(MovementKeys.FALL, new FallEvaluator(world, entity));
 
-        NodeGraph graph = new NodeGraph(registry, world);
-        return new AStarSearch(graph, 5_000L);
+        return new NodeGraph(registry, world);
+    }
+
+    private AStarSearch buildSearch(Set<BlockPos> walls) {
+        return new AStarSearch(buildGraph(walls), 5_000L);
     }
 
     @Test
@@ -131,7 +134,8 @@ class AStarSearchTest {
     }
 
     @Test
-    void unreachableGoal_returnsUnreachable() {
+    void unreachableGoal_walledOff_returnsPartialPath() {
+        // Goal surrounded by walls — but search explores large area → best-so-far node close to walls
         BlockPos goalPos = new BlockPos(5, FLOOR_Y, 5);
         Set<BlockPos> walls = Set.of(
             new BlockPos(4, FLOOR_Y, 5),
@@ -147,7 +151,43 @@ class AStarSearchTest {
         BlockPos start = new BlockPos(0, FLOOR_Y, 0);
         List<BlockPos> path = search.search(start, new BlockGoal(goalPos));
 
-        assertEquals(PathStatus.UNREACHABLE, search.getLastStatus());
+        assertEquals(PathStatus.PARTIAL, search.getLastStatus());
+        assertFalse(path.isEmpty(), "Partial path must contain at least one node");
+    }
+
+    @Test
+    void unreachableGoal_tinyWalkableArea_returnsUnreachable() {
+        // Only 2 walkable blocks — goal is 50 blocks away; no explored node is >= 5 blocks from start
+        IWorldLayer tinyWorld = new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) {
+                return (pos.x() == 0 || pos.x() == 1) && pos.y() == FLOOR_Y && pos.z() == 0;
+            }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return false; }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+        IBlockPhysicsLayer block = normalBlock();
+        OrderedRegistry<IMovementEvaluator> registry = new OrderedRegistry<>();
+        registry.register(MovementKeys.WALK, new WalkEvaluator(tinyWorld, block));
+        NodeGraph graph = new NodeGraph(registry, tinyWorld);
+        AStarSearch search = new AStarSearch(graph, 5_000L);
+
+        BlockPos start = new BlockPos(0, FLOOR_Y, 0);
+        List<BlockPos> path = search.search(start, new BlockGoal(new BlockPos(50, FLOOR_Y, 50)));
+
+        assertEquals(PathStatus.UNREACHABLE, search.getLastStatus(),
+            "No node is >=5 blocks from start, so no partial path should be generated");
         assertTrue(path.isEmpty());
+    }
+
+    @Test
+    void weightedSearch_withHighWeight_stillFindsValidPath() {
+        AStarSearch search = new AStarSearch(buildGraph(Collections.emptySet()), 5_000L, 1.5);
+        BlockPos start = new BlockPos(0, FLOOR_Y, 0);
+        BlockPos goalPos = new BlockPos(4, FLOOR_Y, 4);
+        List<BlockPos> path = search.search(start, new BlockGoal(goalPos));
+
+        assertEquals(PathStatus.FOUND, search.getLastStatus());
+        assertEquals(goalPos, path.getLast());
     }
 }

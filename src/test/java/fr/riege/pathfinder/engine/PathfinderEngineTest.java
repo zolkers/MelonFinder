@@ -101,7 +101,7 @@ class PathfinderEngineTest {
         return new PathfinderContext(
             world, block, entity, collision,
             registry, new Euclidean3DHeuristic(),
-            5_000L, 16, 42L
+            5_000L, 16, 42L, 1.0
         );
     }
 
@@ -156,8 +156,8 @@ class PathfinderEngineTest {
         PathStatus status = result.path().status();
 
         assertTrue(
-            status == PathStatus.UNREACHABLE || status == PathStatus.TIMEOUT,
-            "Expected UNREACHABLE or TIMEOUT but got: " + status
+            status == PathStatus.UNREACHABLE || status == PathStatus.TIMEOUT || status == PathStatus.PARTIAL,
+            "Expected UNREACHABLE, TIMEOUT or PARTIAL but got: " + status
         );
     }
 }

@@ -95,4 +95,5 @@ class JumpEvaluatorTest {
         JumpEvaluator evaluator = new JumpEvaluator(worldWith(false, false), normalBlock(), standardEntity(), emptyCollision());
         assertFalse(evaluator.evaluate(FROM, TO_UP).isPossible());
     }
+
 }

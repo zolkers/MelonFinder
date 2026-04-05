@@ -27,7 +27,8 @@ final class PathAssembler {
     record AssemblyOutput(@NotNull Path path, @NotNull PathDebugData debugData) {}
 
     static @NotNull AssemblyOutput assemble(@NotNull List<BlockPos> waypoints,
-                                            @NotNull PathfinderContext ctx) {
+                                            @NotNull PathfinderContext ctx,
+                                            @NotNull PathStatus status) {
         if (waypoints.isEmpty()) {
             Path empty = new Path(List.of(), 0, PathStatus.UNREACHABLE);
             return new AssemblyOutput(empty, new PathDebugData(List.of(), List.of()));
@@ -40,7 +41,7 @@ final class PathAssembler {
         List<Vec3> dense    = new CatmullRomSmoother(ctx.collisionLayer(), ctx.worldLayer(), hitboxHalf).smooth(smoothed);
         List<Segment> segments = buildSegments(dense);
         double totalCost = segments.stream().mapToDouble(Segment::length).sum();
-        Path path = new Path(segments, totalCost, PathStatus.FOUND);
+        Path path = new Path(segments, totalCost, status);
         PathDebugData debugData = new PathDebugData(List.copyOf(smoothed), List.copyOf(dense));
         return new AssemblyOutput(path, debugData);
     }
