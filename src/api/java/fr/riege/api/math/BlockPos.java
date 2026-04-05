@@ -47,10 +47,25 @@ public record BlockPos(int x, int y, int z) {
      *         always {@code >= 0.0}
      */
     public double distanceTo(@NotNull BlockPos other) {
+        return Math.sqrt(distanceSqTo(other));
+    }
+
+    /**
+     * Returns the squared Euclidean distance between this position and the
+     * {@code other} position.
+     *
+     * <p>This method is faster than {@link #distanceTo(BlockPos)} as it avoids
+     * the costly square root operation.  It is suitable for comparing
+     * distances or checking whether a position is within a given radius.
+     *
+     * @param other the target position; must not be {@code null}
+     * @return the squared straight-line distance; always {@code >= 0.0}
+     */
+    public double distanceSqTo(@NotNull BlockPos other) {
         double dx = (double) this.x - other.x;
         double dy = (double) this.y - other.y;
         double dz = (double) this.z - other.z;
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        return dx * dx + dy * dy + dz * dz;
     }
 
     /**
