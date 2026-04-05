@@ -111,4 +111,35 @@ public interface IWorldLayer {
     default boolean isPassable(@NotNull BlockPos pos) {
         return !isSolid(pos);
     }
+
+    /**
+     * Returns whether the block at {@code pos} is climbable, meaning an entity
+     * can grip it to ascend or descend vertically.
+     *
+     * <p>Climbable blocks include ladders and vines.  The default implementation
+     * returns {@code false}; Minecraft-aware implementations must override this
+     * to consult the block tag {@code minecraft:climbable}.
+     *
+     * @param pos the block position to query; must not be {@code null}
+     * @return {@code true} if the block allows vertical climbing
+     */
+    default boolean isClimbable(@NotNull BlockPos pos) {
+        return false;
+    }
+
+    /**
+     * Returns whether the chunk containing {@code pos} is currently loaded in
+     * the world.
+     *
+     * <p>The pathfinder skips edges whose destination falls in an unloaded
+     * chunk, preventing evaluation of positions whose block state is unknown.
+     * The default implementation returns {@code true} (all chunks loaded),
+     * which is appropriate for unit tests and offline tools.
+     *
+     * @param pos the block position to check; must not be {@code null}
+     * @return {@code true} if the chunk is loaded; {@code false} otherwise
+     */
+    default boolean isChunkLoaded(@NotNull BlockPos pos) {
+        return true;
+    }
 }

@@ -4,6 +4,7 @@ import fr.riege.api.annotation.Layer;
 import fr.riege.api.layer.IWorldLayer;
 import fr.riege.api.math.BlockPos;
 import fr.riege.api.math.FluidType;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
@@ -22,7 +23,18 @@ public final class FabricWorldLayer implements IWorldLayer {
     public boolean isWalkable(@NotNull BlockPos pos) {
         return isPassable(pos)
             && isPassable(pos.offset(0, 1, 0))
+            && isPassable(pos.offset(0, 2, 0))
             && isSolid(pos.offset(0, -1, 0));
+    }
+
+    @Override
+    public boolean isClimbable(@NotNull BlockPos pos) {
+        return level.getBlockState(toMc(pos)).is(BlockTags.CLIMBABLE);
+    }
+
+    @Override
+    public boolean isChunkLoaded(@NotNull BlockPos pos) {
+        return level.hasChunkAt(toMc(pos));
     }
 
     @Override
