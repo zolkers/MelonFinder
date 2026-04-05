@@ -50,5 +50,15 @@ public enum PathStatus {
      * because the player issued a new navigation command or because a higher-
      * level controller interrupted the current request.
      */
-    CANCELLED
+    CANCELLED,
+
+    /**
+     * A complete route to the goal could not be found, but the search reached
+     * a node closer to the goal than the start position.
+     *
+     * <p>The returned path leads to the best explored node (lowest heuristic
+     * cost to goal) that is at least five blocks from the start.  Callers
+     * should follow this partial path and then recompute from the new position.
+     */
+    PARTIAL
 }
