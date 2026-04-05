@@ -78,4 +78,17 @@ class ParkourEvaluatorTest {
         ParkourEvaluator evaluator = new ParkourEvaluator(nonWalkableWorld());
         assertFalse(evaluator.evaluate(FROM, TO_GAP2).isPossible());
     }
+
+    @Test
+    void blockedHeadAboveGap_isImpossible() {
+        BlockPos ceiling = new BlockPos(INTERMEDIATE.x(), INTERMEDIATE.y() + 1, INTERMEDIATE.z());
+        IWorldLayer ceilingWorld = new IWorldLayer() {
+            @Override public boolean isWalkable(@NonNull BlockPos pos) { return !pos.equals(INTERMEDIATE); }
+            @Override public boolean isSolid(@NonNull BlockPos pos) { return pos.equals(ceiling); }
+            @Override public @NonNull FluidType getFluidType(@NonNull BlockPos pos) { return FluidType.NONE; }
+            @Override public int getLightLevel(@NonNull BlockPos pos) { return 15; }
+        };
+        ParkourEvaluator evaluator = new ParkourEvaluator(ceilingWorld);
+        assertFalse(evaluator.evaluate(FROM, TO_GAP2).isPossible());
+    }
 }
